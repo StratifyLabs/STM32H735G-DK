@@ -1,0 +1,29 @@
+
+set(SOURCES
+	sl_config.h
+	config.h
+	config/clock_config.c
+	config/clock_config.h
+	config/cache_config.c
+	config/cache_config.h
+	config/debug_config.c
+	config/debug_config.h
+	config/sleep_config.c
+	config/sleep_config.h
+	config/sys_config.c
+	config/sys_config.h
+	config/devfs_config.c
+	config/devfs_config.h
+	config/fs_config.c
+	config/fs_config.h
+	config/link_config.c
+	config/link_config.h
+	config/mcu_config.c
+	config/mcu_config.h
+	config/os_config.c
+	config/os_config.h
+	config/usb_config.c
+	config/usb_config.h
+	config/sos_config.c
+	config/symbols_config.c
+	PARENT_SCOPE)
