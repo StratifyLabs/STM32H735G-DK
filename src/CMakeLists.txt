@@ -1,7 +1,7 @@
 
 set(SOURCES
-	sl_config.h
 	config.h
+	sl_config.h
 	config/clock_config.c
 	config/clock_config.h
 	config/cache_config.c
@@ -24,6 +24,8 @@ set(SOURCES
 	config/os_config.h
 	config/usb_config.c
 	config/usb_config.h
+	config/stm32_config.c
 	config/sos_config.c
 	config/symbols_config.c
+	stm32/SystemClock_config.c
 	PARENT_SCOPE)

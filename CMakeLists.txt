@@ -9,50 +9,58 @@ set(CMAKE_TOOLCHAIN_FILE ${SOS_SDK_PATH}/cmake/sos-toolchain.cmake)
 include(sos-sdk)
 
 # change to the ARCH of your chip like v7m for Cortex M3
-set(SOS_ARCH "v7m")
+set(SOS_ARCH "v7em_f5dh")
 # set to an empty string
 set(SOS_ARCH_LIST "")
+set(MCU stm32h735xx)
+
+
 
 include(compiler_rt)
 include(newlib)
 include(StratifyOS)
+
+include(StratifyOS_${MCU}_debug_${SOS_ARCH})
+include(StratifyOS_${MCU}_release_${SOS_ARCH})
+
 # include other cmake modules as needed
 
-project(project_name)
+project(STM32H735G-DK)
 
-set(MCU your_mcu)
 
 #Stratify Labs assigned hardware ID
 set(HARDWARE_ID 0x00000000)
-set(BOOT_START_ADDRESS 0x00000000)
-set(KERNEL_START_ADDRESS 0x00000000)
-set(KERNEL_LINKER_FILE ldscripts/${MCU}-rom.ld)
-set(BOOT_LINKER_FILE ldscripts/${MCU}-rom.ld)
+set(BOOT_START_ADDRESS 0x08000000)
+set(KERNEL_START_ADDRESS 0x08000000)
+set(KERNEL_LINKER_FILE ldscripts/stm32h735xg-rom.ld)
+set(BOOT_LINKER_FILE ldscripts/stm32h735xg-rom.ld)
 
 set(DEFINITIONS
 	__BOOT_START_ADDRESS=${BOOT_START_ADDRESS}
 	__KERNEL_START_ADDRESS=${KERNEL_START_ADDRESS}
+	__stm32h735xx
+  MCU_ARCH_STM32
 	)
-
-set(COMMON_LIBRARIES
-	newlib_libc
-	newlib_libm
-	StratifyOS_sys
-	StratifyOS_${MCU}
-	compiler_rt)
 
 set(BOOT_LIBRARIES
 	StratifyOS_${MCU}
 	StratifyOS_boot
 	StratifyOS_usbd
-	${COMMON_LIBRARIES})
+	newlib_libc
+	newlib_libm
+	StratifyOS_${MCU}
+	compiler_rt)
 
 set(KERNEL_LIBRARIES
 	StratifyOS_sys
 	StratifyOS_${MCU}
 	StratifyOS_usbd
 	StratifyOS_sys
-	${COMMON_LIBRARIES})
+	newlib_libc
+	newlib_libm
+	StratifyOS_sys
+	StratifyOS_${MCU}
+	compiler_rt)
 
 sos_sdk_add_subdirectory(KERNEL_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/src)
 sos_sdk_add_subdirectory(BOOT_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/boot)
@@ -65,6 +73,7 @@ add_executable(${RELEASE_TARGET})
 target_sources(${RELEASE_TARGET}
 	PUBLIC
 	${KERNEL_SOURCELIST}
+	${CMAKE_CURRENT_SOURCE_DIR}/sl_settings.json
 	)
 target_include_directories(${RELEASE_TARGET}
 	PUBLIC
@@ -73,6 +82,7 @@ target_include_directories(${RELEASE_TARGET}
 target_compile_definitions(${RELEASE_TARGET}
 	PUBLIC
 	${DEFINITIONS}
+	VECTOR_TABLE_ADDRESS=${KERNEL_START_ADDRESS}
 	)
 target_compile_options(${RELEASE_TARGET} PUBLIC -Os)
 set_target_properties(${RELEASE_TARGET}
@@ -100,6 +110,7 @@ target_include_directories(${BOOT_RELEASE_TARGET}
 target_compile_definitions(${BOOT_RELEASE_TARGET}
 	PUBLIC
 	${DEFINITIONS}
+	VECTOR_TABLE_ADDRESS=${BOOT_START_ADDRESS}
 	_IS_BOOT=1
 	)
 target_compile_options(${BOOT_RELEASE_TARGET} PUBLIC -Os)

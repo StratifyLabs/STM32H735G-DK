@@ -5,6 +5,6 @@
 
 #include <sos/fs/devfs.h>
 
-const devfs_device_t devfs_list[];
+extern const devfs_device_t devfs_list[];
 
 #endif // CONFIG_DEBUG_DEVFS_H

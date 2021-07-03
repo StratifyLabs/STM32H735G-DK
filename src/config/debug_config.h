@@ -7,7 +7,7 @@
 #include <sos/link/types.h>
 #include <device/ffifo.h>
 
-#include "debug_config.h"
+#include "config.h"
 
 
 void debug_initialize();

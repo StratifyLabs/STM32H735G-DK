@@ -1,7 +1,5 @@
 
 
-//Copyright 2021 Stratify Labs, See LICENSE.md for details
-
 #include "config.h"
 
 void sleep_idle() { __WFI(); }

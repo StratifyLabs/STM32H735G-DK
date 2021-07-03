@@ -1,0 +1,6 @@
+DIR:stateDiagram:app:none:sl Application Callgraph:LR Mermaid graph for all functions called
+D:app:n0(main)-->|0|n1(App.initialize)
+D:app:n1(App.initialize)-->|1|n2(App.load_credentials)
+D:app:n0(main)-->|2|n3(initialize)
+D:app:n0(main)-->|3|n4(execute_cli_arguments)
+D:app:n4(execute_cli_arguments)-->|4|n5(handle_switches)

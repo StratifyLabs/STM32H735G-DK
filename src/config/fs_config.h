@@ -8,6 +8,5 @@
 #include <sos/fs/sysfs.h>
 
 extern const sysfs_t sysfs_list[];
-extern const devfs_device_t devfs_list[];
 
 #endif // CONFIG_FS_CONFIG_H
