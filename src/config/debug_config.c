@@ -9,11 +9,11 @@
 #include "debug_config.h"
 
 #if ___debug
-static UART_HandleTypeDef m_huart3;
+static UART_HandleTypeDef m_huart MCU_SYS_MEM;
 #endif
 
-#define DEBUG_LED_PORT GPIOB
-#define DEBUG_LED_PINMASK (1 << 7)
+#define DEBUG_LED_PORT GPIOC
+#define DEBUG_LED_PINMASK (1 << 3)
 
 void debug_initialize() {
 
@@ -39,34 +39,43 @@ void debug_initialize() {
   gpio_init.Alternate = GPIO_AF7_USART3;
   HAL_GPIO_Init(GPIOD, &gpio_init);
 
-  m_huart3.Instance = USART3;
-  m_huart3.Init.BaudRate = 115200;
-  m_huart3.Init.WordLength = UART_WORDLENGTH_8B;
-  m_huart3.Init.StopBits = UART_STOPBITS_1;
-  m_huart3.Init.Parity = UART_PARITY_NONE;
-  m_huart3.Init.Mode = UART_MODE_TX_RX;
-  m_huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  m_huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-  HAL_UART_Init(&m_huart3);
+  m_huart.Instance = USART3;
+  m_huart.Init.BaudRate = 115200;
+  m_huart.Init.WordLength = UART_WORDLENGTH_8B;
+  m_huart.Init.StopBits = UART_STOPBITS_1;
+  m_huart.Init.Parity = UART_PARITY_NONE;
+  m_huart.Init.Mode = UART_MODE_TX_RX;
+  m_huart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  m_huart.Init.OverSampling = UART_OVERSAMPLING_16;
+  HAL_UART_Init(&m_huart);
 #endif
+
+
+  debug_enable_led();
+  const char message[] = "Hello\n";
+  while(1){
+    debug_write(message, sizeof(message)-1);
+    cortexm_delay_ms(200);
+  }
+
 }
 
 void debug_write(const void *buf, int nbyte) {
 #if ___debug
-  const char *cbuf = buf;
+  const u8 *cbuf = buf;
   for (int i = 0; i < nbyte; i++) {
-    char c = cbuf[i];
-    HAL_UART_Transmit(&m_huart3, &c, 1, HAL_MAX_DELAY);
+    u8 c = cbuf[i];
+    HAL_UART_Transmit(&m_huart, &c, 1, HAL_MAX_DELAY);
   }
 #endif
 }
 
 void debug_enable_led() {
-  HAL_GPIO_WritePin(DEBUG_LED_PORT, DEBUG_LED_PINMASK, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(DEBUG_LED_PORT, DEBUG_LED_PINMASK, GPIO_PIN_RESET);
 }
 
 void debug_disable_led() {
-  HAL_GPIO_WritePin(DEBUG_LED_PORT, DEBUG_LED_PINMASK, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(DEBUG_LED_PORT, DEBUG_LED_PINMASK, GPIO_PIN_SET);
 }
 
 #define TRACE_COUNT 16

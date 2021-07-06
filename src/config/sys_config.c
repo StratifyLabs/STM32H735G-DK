@@ -1,9 +1,9 @@
 
 #include <stm32/stm32_config.h>
 
-#include "config.h"
 
-extern void SystemClock_Config();
+#include "stm32/stm32h735g-dk.h"
+#include "config.h"
 
 void sys_initialize() {
   stm32_initialize();
