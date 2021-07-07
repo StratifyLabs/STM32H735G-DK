@@ -487,7 +487,8 @@ int32_t BSP_I2C4_IsReady(uint16_t DevAddr, uint32_t Trials)
   */
 int32_t BSP_GetTick(void)
 {
-  return (int32_t)HAL_GetTick();
+  return 0;
+  //return (int32_t)HAL_GetTick();
 }
 
 #if (USE_HAL_I2C_REGISTER_CALLBACKS == 1)

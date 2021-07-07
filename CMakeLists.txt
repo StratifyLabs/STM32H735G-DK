@@ -29,9 +29,9 @@ project(STM32H735G-DK)
 
 
 #Stratify Labs assigned hardware ID
-set(HARDWARE_ID 0x00000000)
+set(HARDWARE_ID 0x00000031)
 set(BOOT_START_ADDRESS 0x08000000)
-set(KERNEL_START_ADDRESS 0x08000000)
+set(KERNEL_START_ADDRESS 0x08080000)
 set(KERNEL_LINKER_FILE ldscripts/stm32h735xg-rom.ld)
 set(BOOT_LINKER_FILE ldscripts/stm32h735xg-rom.ld)
 
@@ -45,11 +45,7 @@ set(DEFINITIONS
 set(BOOT_LIBRARIES
 	StratifyOS_${MCU}
 	StratifyOS_boot
-	StratifyOS_usbd
-	newlib_libc
-	newlib_libm
-	StratifyOS_${MCU}
-	compiler_rt)
+	StratifyOS_usbd)
 
 set(KERNEL_LIBRARIES
 	StratifyOS_sys

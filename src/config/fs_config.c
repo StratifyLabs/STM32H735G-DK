@@ -7,9 +7,9 @@
 #include "fs_config.h"
 #include "devfs_config.h"
 
-#define RAM_PAGES (320 - SYSTEM_MEMORY_SIZE / 1024UL)
+#define RAM_PAGES (320 - CONFIG_SYSTEM_MEMORY_SIZE / 1024UL)
 #define FLASH_START (0x08000000 + 2 * 16 * 1024UL)
-#define RAM_START (0x20000000 + SYSTEM_MEMORY_SIZE)
+#define RAM_START (0x20000000 + CONFIG_SYSTEM_MEMORY_SIZE)
 
 // Application Filesystem ------------------------------------------
 static u32 ram_usage_table[APPFS_RAM_USAGE_WORDS(RAM_PAGES)] MCU_SYS_MEM;

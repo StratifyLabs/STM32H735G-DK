@@ -3,6 +3,7 @@
 #include <sdk/types.h>
 #include <sos/arch.h>
 #include <sos/fs/devfs.h>
+#include <sos/boot/boot_debug.h>
 
 #include <mcu/flash.h>
 
@@ -12,9 +13,17 @@ const struct __sFILE_fake __sf_fake_stdin;
 const struct __sFILE_fake __sf_fake_stdout;
 const struct __sFILE_fake __sf_fake_stderr;
 
+#if __KERNEL_START_ADDRESS == __BOOT_START_ADDRESS
+#error "Bootloader will hardfault if kernel and boot start are the same address"
+#endif
+
+
 #include "../src/config.h"
 
 void boot_event_handler(int event, void *args) {
+  MCU_UNUSED_ARGUMENT(event);
+  MCU_UNUSED_ARGUMENT(args);
+  //dstr("event:"); dint(event); dstr("\n");
 
 }
 

@@ -33,16 +33,16 @@ link_transport_driver_t boot_link_usb_transport = {
 static usbd_control_t m_usb_control;
 
 link_transport_phy_t link_transport_open(const char *name,
-                                         const void *options) {
+                                         const void * options) {
+  MCU_UNUSED_ARGUMENT(options);
   link_transport_phy_t fd;
-  usb_attr_t usb_attr = {0};
+  usb_attr_t usb_attr = {};
 
   // initialize the USB
   memset(&(usb_attr.pin_assignment), 0xff, sizeof(usb_pin_assignment_t));
   usb_attr.o_flags = USB_FLAG_SET_DEVICE;
-  usb_attr.pin_assignment.dp = mcu_pin(0xff, 0xff);
-  usb_attr.pin_assignment.dm = mcu_pin(0xff, 0xff);
-  // usb_attr.freq = mcu_board_config.core_osc_freq;
+  usb_attr.pin_assignment.dp = mcu_pin(0,12);
+  usb_attr.pin_assignment.dm = mcu_pin(0,11);
   fd = boot_link_transport_usb_open(name, &m_usb_control,
                                     &sos_link_transport_usb_link_constants,
                                     &usb_handle, &usb_attr, mcu_pin(0xff, 0xff),
