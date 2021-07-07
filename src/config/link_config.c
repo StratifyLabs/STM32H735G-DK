@@ -41,8 +41,6 @@ link_transport_phy_t link_transport_open(const char *name,
   // set up the USB attributes
   memset(&(usb_attr.pin_assignment), 0xff, sizeof(usb_pin_assignment_t));
   usb_attr.o_flags = USB_FLAG_SET_DEVICE;
-  usb_attr.pin_assignment.dp = SOS_BOARD_USB_DP_PIN;
-  usb_attr.pin_assignment.dm = SOS_BOARD_USB_DM_PIN;
   usb_attr.freq = sos_config.sys.core_clock_frequency;
 
   sos_debug_log_info(SOS_DEBUG_USER1, "Open USB");

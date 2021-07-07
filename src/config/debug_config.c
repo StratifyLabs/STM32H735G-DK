@@ -40,7 +40,7 @@ void debug_initialize() {
   HAL_GPIO_Init(GPIOD, &gpio_init);
 
   m_huart.Instance = USART3;
-  m_huart.Init.BaudRate = 115200;
+  m_huart.Init.BaudRate = 400000;
   m_huart.Init.WordLength = UART_WORDLENGTH_8B;
   m_huart.Init.StopBits = UART_STOPBITS_1;
   m_huart.Init.Parity = UART_PARITY_NONE;
@@ -50,13 +50,13 @@ void debug_initialize() {
   HAL_UART_Init(&m_huart);
 #endif
 
-
-  debug_enable_led();
+#if 0
   const char message[] = "Hello\n";
   while(1){
     debug_write(message, sizeof(message)-1);
     cortexm_delay_ms(200);
   }
+#endif
 
 }
 

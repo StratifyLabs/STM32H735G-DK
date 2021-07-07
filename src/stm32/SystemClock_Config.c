@@ -36,7 +36,7 @@ void SystemClock_Config() {
 
   RCC_OscInitStruct.PLL.PLLM = 12;
   RCC_OscInitStruct.PLL.PLLN = 280;
-  RCC_OscInitStruct.PLL.PLLFRACN = 0;
+  RCC_OscInitStruct.PLL.PLLFRACN = 2662;
   RCC_OscInitStruct.PLL.PLLP = 2;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLQ = 2;
@@ -71,12 +71,54 @@ void SystemClock_Config() {
   }
 
   /* PLL3 for USB Clock */
+#if 1
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USB;
   PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLL3;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
     while (1) {
     }
   }
+#else
+
+  {
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_CRSInitTypeDef RCC_CRSInitStruct= {0};
+
+    /* Enable HSI48 */
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48;
+    RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USB;
+    PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
+    HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct)!= HAL_OK)
+    {
+      //Error_Handler();
+    }
+    /*Configure the clock recovery system (CRS)**********************************/
+
+    /*Enable CRS Clock*/
+    __HAL_RCC_CRS_CLK_ENABLE();
+
+    /* Default Synchro Signal division factor (not divided) */
+    RCC_CRSInitStruct.Prescaler = RCC_CRS_SYNC_DIV1;
+
+    /* Set the SYNCSRC[1:0] bits according to CRS_Source value */
+    RCC_CRSInitStruct.Source = RCC_CRS_SYNC_SOURCE_USB1;
+
+    /* HSI48 is synchronized with USB SOF at 1KHz rate */
+    RCC_CRSInitStruct.ReloadValue =  RCC_CRS_RELOADVALUE_DEFAULT;
+    RCC_CRSInitStruct.ErrorLimitValue = RCC_CRS_ERRORLIMIT_DEFAULT;
+    RCC_CRSInitStruct.Polarity = RCC_CRS_SYNC_POLARITY_RISING;
+
+    /* Set the TRIM[5:0] to the default value */
+    RCC_CRSInitStruct.HSI48CalibrationValue = RCC_CRS_HSI48CALIBRATION_DEFAULT;
+
+    /* Start automatic synchronization */
+    HAL_RCCEx_CRSConfig (&RCC_CRSInitStruct);
+  }
+#endif
 
   /* Select PLL as system clock source and configure  bus clocks dividers */
   RCC_ClkInitStruct.ClockType =
@@ -115,6 +157,8 @@ void SystemClock_Config() {
   HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_HSE, RCC_MCODIV_1);
 
   __HAL_RCC_CRC_CLK_ENABLE();
+
+  HAL_PWREx_EnableUSBVoltageDetector();
 }
 
 void MPU_Config(void)

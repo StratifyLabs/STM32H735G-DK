@@ -2,7 +2,12 @@
 
 #include "config.h"
 
-void sleep_idle() { __WFI(); }
+void sleep_idle() {
+
+  //H7 cannot sleep while USB is connected
+
+  //__WFI();
+}
 
 void sleep_hibernate(int seconds) {
   // set deep sleep

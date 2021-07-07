@@ -281,7 +281,15 @@ char usb_device_fifo_buffer[USB_DEVICE_FIFO_BUFFER_SIZE] MCU_SYS_MEM;
 u8 usb_device_fifo_read_buffer[USB_DEVICE_FIFO_BUFFER_SIZE] MCU_SYS_MEM;
 device_fifo_state_t usb_device_fifo_state MCU_SYS_MEM;
 usb_state_t usb_device_state MCU_SYS_MEM;
-const usb_config_t usb_device_config = {.port = SOS_BOARD_USB_PORT, .attr = {}};
+const usb_config_t usb_device_config = {
+    .port = SOS_BOARD_USB_PORT, .attr = {
+                                    .pin_assignment = {
+                                        .dm = {0xff, 0xff},
+                                        .dp = {0xff, 0xff},
+                                        .id = {0xff, 0xff},
+                                        .vbus = {0xff, 0xff},
+                                    }
+                                }};
 const device_fifo_config_t usb_device_fifo_config = {
     .device = DEVFS_DEVICE("usb", mcu_usb, 0, &usb_device_config,
                            &usb_device_state, 0666, SYSFS_ROOT, S_IFCHR),
@@ -327,14 +335,6 @@ const tmr_config_t tmr2_config = {
 tmr_state_t tmr3_state MCU_SYS_MEM;
 const tmr_config_t tmr3_config = {
     .port = 3,
-    .attr = {.pin_assignment = {.channel[0] = {0xff, 0xff},
-                                .channel[1] = {0xff, 0xff},
-                                .channel[2] = {0xff, 0xff},
-                                .channel[3] = {0xff, 0xff}}}};
-
-tmr_state_t tmr4_state MCU_SYS_MEM;
-const tmr_config_t tmr4_config = {
-    .port = 4,
     .attr = {.pin_assignment = {.channel[0] = {0xff, 0xff},
                                 .channel[1] = {0xff, 0xff},
                                 .channel[2] = {0xff, 0xff},
@@ -413,9 +413,6 @@ const devfs_device_t devfs_list[] = {
                  SYSFS_ROOT, S_IFCHR),
     // TIM4
     DEVFS_DEVICE("tmr3", mcu_tmr, 3, &tmr3_config, &tmr3_state, 0666,
-                 SYSFS_ROOT, S_IFCHR),
-    // TIM5
-    DEVFS_DEVICE("tmr4", mcu_tmr, 4, &tmr4_config, &tmr4_state, 0666,
                  SYSFS_ROOT, S_IFCHR),
 
     DEVFS_TERMINATOR};

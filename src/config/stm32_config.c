@@ -11,6 +11,9 @@
 
 static char stm32_usb_rx_buffer[USB_RX_BUFFER_SIZE] MCU_SYS_MEM;
 
+//STM32H735 has 4KB of USB RAM
+//each word is 32-bits
+//128words = 512 bytes
 #define SOS_BOARD_RX_FIFO_WORDS 128
 #define SOS_BOARD_TX0_FIFO_WORDS 32
 #define SOS_BOARD_TX1_FIFO_WORDS 32
@@ -23,6 +26,7 @@ const stm32_config_t stm32_config = {
     .flash_program_millivolts = 3300,
     .usb =
         {
+
             .rx_buffer = stm32_usb_rx_buffer,
             .rx_buffer_size = USB_RX_BUFFER_SIZE,
             .rx_fifo_word_size =
