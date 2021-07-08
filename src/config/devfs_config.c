@@ -20,6 +20,7 @@
 #include <sos/link.h>
 #include <sos/sos.h>
 #include <sys/lock.h>
+#include <device/drive_sdio.h>
 
 #include <stm32/stm32_types.h>
 
@@ -84,19 +85,6 @@ const stm32_adc_dma_config_t adc0_dma_config = {
                               STM32_DMA_FLAG_IS_MEMORY_SINGLE,
                    .priority = STM32_DMA_PRIORITY_HIGH}};
 
-#define ADC_PACKET_SIZE 512
-
-char adc0_stream_ffifo_rx_buffer[2 * ADC_PACKET_SIZE];
-stream_ffifo_state_t adc0_stream_ffifo_state MCU_SYS_MEM;
-const stream_ffifo_config_t adc0_stream_ffifo_config = {
-    .device = DEVFS_DEVICE("adc0", mcu_adc_dma, 0, &adc0_dma_config,
-                           &adc0_dma_state, 0777, SYSFS_ROOT, S_IFCHR),
-    .tx_loc = 0,
-    .rx_loc = ADC_LOC_IS_GROUP,
-    .tx = {.frame_count = 0, .frame_size = 0, .buffer = 0},
-    .rx = {.frame_count = 2,
-           .frame_size = ADC_PACKET_SIZE,
-           .buffer = adc0_stream_ffifo_rx_buffer}};
 
 char uart1_fifo_buffer[64];
 fifo_config_t uart1_fifo_config = {.size = 64, .buffer = uart1_fifo_buffer};
@@ -139,21 +127,16 @@ stm32_uart_dma_config_t uart1_dma_config = {
                .o_flags = STM32_DMA_FLAG_IS_MEMORY_TO_PERIPH | UART_DMA_FLAGS |
                           STM32_DMA_FLAG_IS_NORMAL}}};
 
-// I2C1
-i2c_state_t i2c0_state MCU_SYS_MEM;
-const i2c_config_t i2c0_config = {
-    .port = 0,
-    .attr = {.o_flags = I2C_FLAG_SET_MASTER,
-             .freq = 100000,
-             .pin_assignment = {.scl = {0, 0}, .sda = {0, 0}}}};
 
-// I2C2
-i2c_state_t i2c1_state MCU_SYS_MEM;
-const i2c_config_t i2c1_config = {
+// I2C4 -- connects to display
+i2c_state_t i2c3_state MCU_SYS_MEM;
+const i2c_config_t i2c3_config = {
     .port = 0,
     .attr = {.o_flags = I2C_FLAG_SET_MASTER,
              .freq = 100000,
-             .pin_assignment = {.scl = {0, 0}, .sda = {0, 0}}}};
+             .pin_assignment = {.scl = {5, 14}, //PF14
+                                .sda = {5, 15} //PF15
+             }}};
 
 #define SPI_DMA_FLAGS                                                          \
   STM32_DMA_FLAG_IS_NORMAL | STM32_DMA_FLAG_IS_MEMORY_SINGLE |                 \
@@ -304,6 +287,44 @@ const device_fifo_config_t usb_device_fifo_config = {
     .read_buffer_size = USB_DEVICE_FIFO_BUFFER_SIZE,
 };
 
+
+
+//SD Card
+#if !_IS_BOOT
+sdio_state_t sdio_state MCU_SYS_MEM;
+const sdio_config_t sdio_config = {
+    .port = 0,
+    .attr = {
+        .o_flags = SDIO_FLAG_SET_INTERFACE | SDIO_FLAG_IS_BUS_WIDTH_4
+                   | SDIO_FLAG_IS_CLOCK_RISING
+                   | SDIO_FLAG_IS_CLOCK_POWER_SAVE_ENABLED
+                   //| SDIO_FLAG_IS_HARDWARE_FLOW_CONTROL_ENABLED
+                   | 0,
+        .freq = 16000000UL,
+        .pin_assignment = {
+            .clock = {2, 12},    // PC12
+            .command = {3, 2},  // PD2
+            .data[0] = {2, 8}, // PC8
+            .data[1] = {2, 9}, // PC9
+            .data[2] = {2, 10},  // PC10
+            .data[3] = {2, 11}   // PC11
+        }}};
+
+#if 0
+sdio_drive_device_state_t sdio_drive_device_state MCU_SYS_MEM;
+const sdio_drive_device_config_t sdio_drive_device_config = {
+    .device = DEVFS_DEVICE(
+        "sdio",
+        mcu_sdio_dma,
+        0,
+        &sdio_config,
+        &sdio_state,
+        0666,
+        SYSFS_ROOT,
+        S_IFBLK)};
+#endif
+#endif
+
 // Coming Soon
 // SD Card as DMA
 // I2S2
@@ -343,7 +364,7 @@ const tmr_config_t tmr3_config = {
 /* This is the list of devices that will show up in the /dev folder.
  */
 const devfs_device_t devfs_list[] = {
-    // System devices
+// System devices
 #if 0
     DEVFS_DEVICE("trace", ffifo, 0, &board_trace_config, &board_trace_state,
                  0666, SYSFS_ROOT, S_IFCHR),
@@ -359,20 +380,19 @@ const devfs_device_t devfs_list[] = {
     DEVFS_DEVICE("auth", auth, 0, 0, 0, 0666, SYSFS_ROOT, S_IFCHR),
     // DEVFS_DEVICE("rtc", mcu_rtc, 0, 0, 0, 0666, SYSFS_ROOT, S_IFCHR),
 
-    // MCU peripherals
-    DEVFS_DEVICE("adc0", stream_ffifo, 0, &adc0_stream_ffifo_config,
-                 &adc0_stream_ffifo_state, 0666, SYSFS_ROOT, S_IFCHR),
-
     DEVFS_DEVICE("core", mcu_core, 0, 0, 0, 0666, SYSFS_ROOT, S_IFCHR),
+
+#if !_IS_BOOT
+    DEVFS_BLOCK_DEVICE("drive0", mcu_sdio_dma, &sdio_config, &sdio_state, 0666,
+                       SYSFS_ROOT, 0xffffffff),
+#endif
 
 #if INCLUDE_ETHERNET
     DEVFS_DEVICE("eth0", netif_lan8742a, 0, &eth0_config, &netif_lan8742a_state,
                  0666, SYSFS_ROOT, S_IFCHR),
 #endif
 
-    DEVFS_DEVICE("i2c0", mcu_i2c, 0, &i2c0_config, &i2c0_state, 0666,
-                 SYSFS_ROOT, S_IFCHR),
-    DEVFS_DEVICE("i2c1", mcu_i2c, 1, &i2c1_config, &i2c1_state, 0666,
+    DEVFS_DEVICE("i2c3", mcu_i2c, 3, &i2c3_config, &i2c3_state, 0666,
                  SYSFS_ROOT, S_IFCHR),
 
     DEVFS_DEVICE("pio0", mcu_pio, 0, pio_config + 0, pio_state + 0, 0666,

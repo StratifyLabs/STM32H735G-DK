@@ -38,8 +38,8 @@ set(SOURCES
 	stm32/stm32h735g_discovery_ospi.h
 	stm32/stm32h735g_discovery_bus.c
 	stm32/stm32h735g_discovery_bus.h
-	stm32/stm32h735g_discovery_sd.c
-	stm32/stm32h735g_discovery_sd.h
+	#stm32/stm32h735g_discovery_sd.c
+	#stm32/stm32h735g_discovery_sd.h
 	stm32/stm32h735g_discovery_ts.c
 	stm32/stm32h735g_discovery_ts.h
 	stm32/stm32h735g_discovery_errno.h
