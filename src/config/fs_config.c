@@ -9,14 +9,15 @@
 #include "fs_config.h"
 #include "devfs_config.h"
 
-#define RAM_PAGES (320 - (CONFIG_SYSTEM_MEMORY_SIZE / 1024UL))
+#define RAM_PAGES (320 - (CONFIG_SYSTEM_MEMORY_SIZE / MCU_RAM_PAGE_SIZE))
+#define EXTERNAL_RAM_PAGES (CONFIG_APP_MEMORY_SIZE/ MCU_RAM_PAGE_SIZE)
 #define FLASH_START (0x08000000 + 128 * 1024UL)
 #define RAM_START (0x24000000 + CONFIG_SYSTEM_MEMORY_SIZE)
 
 #define DEVFS_OFFSET 1
 
 // Application Filesystem ------------------------------------------
-static u32 ram_usage_table[APPFS_RAM_USAGE_WORDS(RAM_PAGES)] MCU_SYS_MEM;
+static u32 ram_usage_table[APPFS_RAM_USAGE_WORDS(EXTERNAL_RAM_PAGES)] MCU_SYS_MEM;
 
 // flash doesn't need config or state
 static const devfs_device_t flash0 =
@@ -32,11 +33,19 @@ const appfs_mem_config_t appfs_mem_config = {
          .page_count = 3,
          .page_size = 128 * 1024UL,
          .address = FLASH_START},
-        // the last 4 128K flash pages are used for the OS
+#if 0
         {.o_flags = MEM_FLAG_IS_RAM,
          .page_count = RAM_PAGES,
          .page_size = MCU_RAM_PAGE_SIZE,
-         .address = RAM_START},
+         .address = RAM_START}
+#endif
+#if 1
+        // external OSPI RAM
+        {.o_flags = MEM_FLAG_IS_RAM | MEM_FLAG_IS_EXTERNAL,
+         .page_count = EXTERNAL_RAM_PAGES,
+         .page_size = MCU_RAM_PAGE_SIZE,
+         .address = CONFIG_APP_MEMORY_ADDRESS}
+#endif
     }};
 
 const devfs_device_t mem0 = DEVFS_DEVICE(

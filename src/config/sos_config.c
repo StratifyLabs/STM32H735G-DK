@@ -4,6 +4,7 @@
 #include <device/sys.h>
 #include <device/uartfifo.h>
 #include <device/usbfifo.h>
+#include <cortexm/mpu.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <mcu/mcu.h>
@@ -19,7 +20,6 @@
 #include <sys/lock.h>
 
 #include <stm32_config.h>
-
 
 #include "config/cache_config.h"
 #include "config/clock_config.h"
@@ -57,7 +57,7 @@
 
 SOS_DECLARE_SECRET_KEY_32(secret_key)
 
-const sos_config_t sos_config MCU_ALIGN(8) =  {
+const sos_config_t sos_config MCU_ALIGN(8) = {
 #if !_IS_BOOT
     .fs = {.devfs_list = devfs_list,
            .rootfs_list = sysfs_list,
@@ -90,18 +90,27 @@ const sos_config_t sos_config MCU_ALIGN(8) =  {
             .write_endpoint = usb_write_endpoint,
             .read_endpoint = usb_read_endpoint},
 
-    .cache = {.enable = cache_enable,
-              .disable = cache_disable,
-              .invalidate_instruction = cache_invalidate_instruction,
-              .invalidate_data = cache_invalidate_data,
-              .invalidate_data_block = cache_invalidate_data_block,
-              .clean_data = cache_clean_data,
-              .clean_data_block = cache_clean_data_block,
-              .external_sram_policy = SOS_CACHE_DEFAULT_POLICY,
-              .sram_policy = WRITE_BACK_READ_WRITE_ALLOCATE,
-              .flash_policy = WRITE_BACK_NO_WRITE_ALLOCATE,
-              .peripherals_policy = SOS_CACHE_PERIPHERALS_POLICY,
-              .lcd_policy = SOS_CACHE_PERIPHERALS_POLICY},
+    .cache =
+        {
+            .enable = cache_enable,
+            .disable = cache_disable,
+            .invalidate_instruction = cache_invalidate_instruction,
+            .invalidate_data = cache_invalidate_data,
+            .invalidate_data_block = cache_invalidate_data_block,
+            .clean_data = cache_clean_data,
+            .clean_data_block = cache_clean_data_block,
+            .external_sram_policy = SOS_CACHE_WRITE_BACK_READ_WRITE_ALLOCATE,
+            .sram_policy = SOS_CACHE_WRITE_BACK_READ_WRITE_ALLOCATE,
+            .flash_policy = SOS_CACHE_WRITE_BACK_NO_WRITE_ALLOCATE,
+            .peripherals_policy = SOS_CACHE_PERIPHERALS_POLICY,
+            .lcd_policy = SOS_CACHE_PERIPHERALS_POLICY,
+            .external_flash_policy = SOS_CACHE_WRITE_BACK_NO_WRITE_ALLOCATE,
+            .tightly_coupled_data_policy = SOS_CACHE_PERIPHERALS_POLICY,
+            .tightly_coupled_instruction_policy = SOS_CACHE_PERIPHERALS_POLICY,
+            .os_code_mpu_type = MPU_MEMORY_FLASH,
+            .os_data_mpu_type = MPU_MEMORY_SRAM,
+            .os_system_data_mpu_type = MPU_MEMORY_TIGHTLY_COUPLED_DATA,
+        },
 
     .mcu = {.interrupt_request_total = MCU_LAST_IRQ + 1,
             .interrupt_middle_priority = MCU_MIDDLE_IRQ_PRIORITY,
@@ -115,7 +124,8 @@ const sos_config_t sos_config MCU_ALIGN(8) =  {
             .get_serial_number = sys_get_serial_number,
             .os_mpu_text_mask = 0,
             .flags = SYS_FLAG_IS_STDIO_FIFO | SYS_FLAG_IS_TRACE |
-                     SYS_FLAG_IS_FIRST_THREAD_AUTHENTICATED | CONFIG_BOARD_FLAGS,
+                     SYS_FLAG_IS_FIRST_THREAD_AUTHENTICATED |
+                     CONFIG_BOARD_FLAGS,
             .name = SL_CONFIG_NAME,
             .version = SL_CONFIG_VERSION_STRING,
             .git_hash = SOS_GIT_HASH,

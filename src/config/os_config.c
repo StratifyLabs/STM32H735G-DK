@@ -1,18 +1,17 @@
 
+#include <cortexm/mpu.h>
 #include <cortexm/task.h>
+#include <device/ffifo.h>
 #include <fcntl.h>
 #include <sos/debug.h>
 #include <sos/led.h>
 #include <sos/link/types.h>
 #include <sos/sos.h>
 #include <string.h>
-#include <device/ffifo.h>
 
 #include "config.h"
 #include "os_config.h"
-
 #include "stm32/stm32h735g-dk.h"
-
 
 void os_event_handler(int event, void *args) {
   switch (event) {
@@ -36,16 +35,23 @@ void os_event_handler(int event, void *args) {
 
   case SOS_EVENT_ROOT_MPU_INITIALIZED:
     SOS_DEBUG_LINE_TRACE();
-
-#if 0
     stm32h735g_dk_init_ospi_ram();
     SOS_DEBUG_LINE_TRACE();
+
+#if 0
+    // Allow full access to video memory
+    mpu_enable_region(TASK_SYSTEM_SECRET_KEY_REGION + 1, (void *)CONFIG_VIDEO_MEMORY_ADDRESS,
+                      CONFIG_VIDEO_MEMORY_SIZE, MPU_ACCESS_PRW_URW,
+                      MPU_MEMORY_EXTERNAL_SRAM,
+                      0 // executable
+    );
 #endif
-
-
-    const pio_attr_t attr = { .o_flags = PIO_FLAG_SET_INPUT, .o_pinmask = (1<<13) };
-    sos_config.sys.pio_set_attributes(2, &attr);
-    sos_debug_printf("PC13 is %d\n", sos_config.sys.pio_read(2, attr.o_pinmask));
+    //background access to app region -- allows caching for general access by appfs
+    mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION, (void *)CONFIG_APP_MEMORY_ADDRESS,
+                      CONFIG_APP_MEMORY_SIZE, MPU_ACCESS_PRW_UR,
+                      MPU_MEMORY_EXTERNAL_SRAM,
+                      0 // executable
+                      );
 
     break;
 
