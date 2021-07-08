@@ -19,6 +19,7 @@ set(MCU stm32h735xx)
 include(compiler_rt)
 include(newlib)
 include(StratifyOS)
+include(fatfs)
 
 include(StratifyOS_${MCU}_debug_${SOS_ARCH})
 include(StratifyOS_${MCU}_release_${SOS_ARCH})
@@ -48,6 +49,7 @@ set(BOOT_LIBRARIES
 	StratifyOS_usbd)
 
 set(KERNEL_LIBRARIES
+	fatfs
 	StratifyOS_sys
 	StratifyOS_${MCU}
 	StratifyOS_usbd

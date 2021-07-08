@@ -300,7 +300,7 @@ const sdio_config_t sdio_config = {
                    | SDIO_FLAG_IS_CLOCK_POWER_SAVE_ENABLED
                    //| SDIO_FLAG_IS_HARDWARE_FLOW_CONTROL_ENABLED
                    | 0,
-        .freq = 16000000UL,
+        .freq = 24000000UL,
         .pin_assignment = {
             .clock = {2, 12},    // PC12
             .command = {3, 2},  // PD2
@@ -310,9 +310,13 @@ const sdio_config_t sdio_config = {
             .data[3] = {2, 11}   // PC11
         }}};
 
-#if 0
-sdio_drive_device_state_t sdio_drive_device_state MCU_SYS_MEM;
-const sdio_drive_device_config_t sdio_drive_device_config = {
+
+u8 drive_sdio_dma_read_buffer[4096];
+
+drive_sdio_state_t drive_sdio_state MCU_SYS_MEM;
+const drive_sdio_config_t drive_sdio_config = {
+    .dma_read_buffer = drive_sdio_dma_read_buffer,
+    .dma_read_buffer_size = sizeof(drive_sdio_dma_read_buffer),
     .device = DEVFS_DEVICE(
         "sdio",
         mcu_sdio_dma,
@@ -322,7 +326,7 @@ const sdio_drive_device_config_t sdio_drive_device_config = {
         0666,
         SYSFS_ROOT,
         S_IFBLK)};
-#endif
+
 #endif
 
 // Coming Soon
@@ -383,7 +387,7 @@ const devfs_device_t devfs_list[] = {
     DEVFS_DEVICE("core", mcu_core, 0, 0, 0, 0666, SYSFS_ROOT, S_IFCHR),
 
 #if !_IS_BOOT
-    DEVFS_BLOCK_DEVICE("drive0", mcu_sdio_dma, &sdio_config, &sdio_state, 0666,
+    DEVFS_BLOCK_DEVICE("drive0", drive_sdio, &drive_sdio_config, &drive_sdio_state, 0666,
                        SYSFS_ROOT, 0xffffffff),
 #endif
 
