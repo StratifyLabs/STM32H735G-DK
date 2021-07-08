@@ -11,6 +11,8 @@
 #include "config.h"
 #include "os_config.h"
 
+#include "stm32/stm32h735g-dk.h"
+
 
 void os_event_handler(int event, void *args) {
   switch (event) {
@@ -30,6 +32,21 @@ void os_event_handler(int event, void *args) {
     while (1) {
       ;
     }
+    break;
+
+  case SOS_EVENT_ROOT_MPU_INITIALIZED:
+    SOS_DEBUG_LINE_TRACE();
+
+#if 0
+    stm32h735g_dk_init_ospi_ram();
+    SOS_DEBUG_LINE_TRACE();
+#endif
+
+
+    const pio_attr_t attr = { .o_flags = PIO_FLAG_SET_INPUT, .o_pinmask = (1<<13) };
+    sos_config.sys.pio_set_attributes(2, &attr);
+    sos_debug_printf("PC13 is %d\n", sos_config.sys.pio_read(2, attr.o_pinmask));
+
     break;
 
   case SOS_EVENT_ROOT_INVALID_PIN_ASSIGNMENT: {

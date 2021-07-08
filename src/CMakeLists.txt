@@ -70,6 +70,7 @@ set(SOURCES
 	stm32/audio.h
 	stm32/lcd.h
 	stm32/ts.h
+	stm32/stm32h735g-dk.c
 	stm32/stm32h735g-dk.h
 
 

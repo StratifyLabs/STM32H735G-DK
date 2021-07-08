@@ -9,6 +9,7 @@
 #include <mcu/flash.h>
 
 #include <stm32h7xx/stm32h7xx_hal_gpio.h>
+#include <stm32h7xx/stm32h7xx_hal.h>
 
 #include "boot_link_config.h"
 
@@ -40,18 +41,13 @@ int boot_is_bootloader_requested() {
     return 1;
   }
 
-  GPIO_InitTypeDef init = {};
-  init.Pin = (1<<13);
-  init.Mode = GPIO_MODE_INPUT;
-  init.Pull = GPIO_PULLDOWN;
-  init.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &init);
-  cortexm_delay_ms(3);
-  //check the button -- PC13 is high when button is pressed
-  if( HAL_GPIO_ReadPin(GPIOC, init.Pin) == GPIO_PIN_SET ){
-    //return 1;
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  const pio_attr_t attr = { .o_flags = PIO_FLAG_SET_INPUT, .o_pinmask = (1<<13) };
+  sos_config.sys.pio_set_attributes(2, &attr);
+  const u32 value = sos_config.sys.pio_read(2, attr.o_pinmask);
+  if( value != 0 ){
+    return 1;
   }
-
 
   return 0;
 }

@@ -273,6 +273,7 @@ const usb_config_t usb_device_config = {
                                         .vbus = {0xff, 0xff},
                                     }
                                 }};
+
 const device_fifo_config_t usb_device_fifo_config = {
     .device = DEVFS_DEVICE("usb", mcu_usb, 0, &usb_device_config,
                            &usb_device_state, 0666, SYSFS_ROOT, S_IFCHR),
@@ -300,7 +301,7 @@ const sdio_config_t sdio_config = {
                    | SDIO_FLAG_IS_CLOCK_POWER_SAVE_ENABLED
                    //| SDIO_FLAG_IS_HARDWARE_FLOW_CONTROL_ENABLED
                    | 0,
-        .freq = 24000000UL,
+        .freq = 16000000UL,
         .pin_assignment = {
             .clock = {2, 12},    // PC12
             .command = {3, 2},  // PD2
