@@ -7,9 +7,9 @@
 #include "fs_config.h"
 #include "devfs_config.h"
 
-#define RAM_PAGES (320 - CONFIG_SYSTEM_MEMORY_SIZE / 1024UL)
-#define FLASH_START (0x08000000 + 2 * 16 * 1024UL)
-#define RAM_START (0x20000000 + CONFIG_SYSTEM_MEMORY_SIZE)
+#define RAM_PAGES (320 - (CONFIG_SYSTEM_MEMORY_SIZE / 1024UL))
+#define FLASH_START (0x08000000 + 128 * 1024UL)
+#define RAM_START (0x24000000 + CONFIG_SYSTEM_MEMORY_SIZE)
 
 // Application Filesystem ------------------------------------------
 static u32 ram_usage_table[APPFS_RAM_USAGE_WORDS(RAM_PAGES)] MCU_SYS_MEM;
@@ -20,24 +20,15 @@ static const devfs_device_t flash0 =
 
 const appfs_mem_config_t appfs_mem_config = {
     .usage_size = sizeof(ram_usage_table),
-    .section_count = 4,
+    .section_count = 2,
     .usage = ram_usage_table,
     .flash_driver = &flash0,
     .sections = {
         {.o_flags = MEM_FLAG_IS_FLASH,
-         .page_count = 2,
-         .page_size = 16 * 1024UL,
-         // skip the first 2 pages for the bootloader
-         .address = FLASH_START},
-        {.o_flags = MEM_FLAG_IS_FLASH,
-         .page_count = 1,
-         .page_size = 64 * 1024UL,
-         .address = FLASH_START + 2 * 16 * 1024UL},
-        {.o_flags = MEM_FLAG_IS_FLASH,
-         .page_count = 1,
+         .page_count = 3,
          .page_size = 128 * 1024UL,
-         .address = FLASH_START + 2 * 16 * 1024UL + 64 * 1024UL},
-        // the last 2 128K flash pages are used for the OS
+         .address = FLASH_START},
+        // the last 4 128K flash pages are used for the OS
         {.o_flags = MEM_FLAG_IS_RAM,
          .page_count = RAM_PAGES,
          .page_size = MCU_RAM_PAGE_SIZE,
