@@ -2,10 +2,13 @@
 
 #include <sdk/types.h>
 #include <sos/arch.h>
+#include <sos/config.h>
 #include <sos/fs/devfs.h>
 #include <sos/boot/boot_debug.h>
 
 #include <mcu/flash.h>
+
+#include <stm32h7xx/stm32h7xx_hal_gpio.h>
 
 #include "boot_link_config.h"
 
@@ -28,6 +31,28 @@ void boot_event_handler(int event, void *args) {
 }
 
 int boot_is_bootloader_requested() {
+
+  //check for SW boot request
+  u32 * address = (u32*)sos_config.boot.software_bootloader_request_address;
+  const int is_software_request = (*address == sos_config.boot.software_bootloader_request_value);
+  *address = 0;
+  if( is_software_request ){
+    return 1;
+  }
+
+  GPIO_InitTypeDef init = {};
+  init.Pin = (1<<13);
+  init.Mode = GPIO_MODE_INPUT;
+  init.Pull = GPIO_PULLDOWN;
+  init.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &init);
+  cortexm_delay_ms(3);
+  //check the button -- PC13 is high when button is pressed
+  if( HAL_GPIO_ReadPin(GPIOC, init.Pin) == GPIO_PIN_SET ){
+    //return 1;
+  }
+
+
   return 0;
 }
 
