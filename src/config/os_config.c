@@ -13,6 +13,12 @@
 #include "os_config.h"
 #include "stm32/stm32h735g-dk.h"
 
+void svcall_flush_video_memory(void * args){
+  CORTEXM_SVCALL_ENTER();
+  MCU_UNUSED_ARGUMENT(args);
+  sos_config.cache.clean_data_block((void *)CONFIG_VIDEO_MEMORY_ADDRESS, CONFIG_VIDEO_MEMORY_SIZE);
+}
+
 void os_event_handler(int event, void *args) {
   switch (event) {
   case SOS_EVENT_ROOT_RESET:
@@ -35,17 +41,16 @@ void os_event_handler(int event, void *args) {
 
   case SOS_EVENT_ROOT_MPU_INITIALIZED:
     SOS_DEBUG_LINE_TRACE();
-    stm32h735g_dk_init_ospi_ram();
+    stm32h735g_dk_init_lcd();
     SOS_DEBUG_LINE_TRACE();
 
-#if 0
     // Allow full access to video memory
-    mpu_enable_region(TASK_SYSTEM_SECRET_KEY_REGION + 1, (void *)CONFIG_VIDEO_MEMORY_ADDRESS,
+    mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION - 1, (void *)CONFIG_VIDEO_MEMORY_ADDRESS,
                       CONFIG_VIDEO_MEMORY_SIZE, MPU_ACCESS_PRW_URW,
                       MPU_MEMORY_EXTERNAL_SRAM,
                       0 // executable
     );
-#endif
+
     //background access to app region -- allows caching for general access by appfs
     mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION, (void *)CONFIG_APP_MEMORY_ADDRESS,
                       CONFIG_APP_MEMORY_SIZE, MPU_ACCESS_PRW_UR,
@@ -69,6 +74,11 @@ void os_event_handler(int event, void *args) {
     usleep(500 * 1000);
     lwip_api.startup(&lwip_api);
 #endif
+    SOS_DEBUG_LINE_TRACE();
+    memset((void *)CONFIG_VIDEO_MEMORY_ADDRESS, 0x00, CONFIG_VIDEO_MEMORY_SIZE);
+    SOS_DEBUG_LINE_TRACE();
+
+    cortexm_svcall(svcall_flush_video_memory, 0);
 
     sos_debug_log_info(SOS_DEBUG_USER0, "Start LED %d");
     sos_led_startup();

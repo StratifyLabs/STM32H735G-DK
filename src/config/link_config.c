@@ -45,6 +45,7 @@ link_transport_phy_t link_transport_open(const char *name,
 
   sos_debug_log_info(SOS_DEBUG_USER1, "Open USB");
 
+  usleep(100*1000);
   fd = sos_link_transport_usb_open(name, &m_usb_control,
                                    &link_transport_usb_constants,
                                    &usb_device_fifo_config.device.handle,

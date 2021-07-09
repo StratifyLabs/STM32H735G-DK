@@ -25,6 +25,8 @@
  extern "C" {
 #endif
 
+#include <sos/debug.h>
+
 /* Includes ------------------------------------------------------------------*/
 #include <stm32h7xx.h>
 #include <stm32h7xx/stm32h7xx_hal_dma.h>

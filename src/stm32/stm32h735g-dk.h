@@ -3,7 +3,8 @@
 
 void SystemClock_Config();
 
-
+//OSPI RAM is init'd by LCD so no need to call both of these
+void stm32h735g_dk_init_lcd();
 void stm32h735g_dk_init_ospi_ram();
 
 #endif // STM32H735GDK_H
