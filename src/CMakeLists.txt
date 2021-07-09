@@ -27,6 +27,10 @@ set(SOURCES
 	config/stm32_config.c
 	config/sos_config.c
 	config/symbols_config.c
+
+	config/lvgl_config.c
+	config/lvgl_config.h
+
 	stm32/SystemClock_config.c
 
 	stm32/stm32h735g_discovery_audio.c

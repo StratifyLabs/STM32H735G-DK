@@ -1,6 +1,10 @@
 
+
 #include <stm32/stm32_config.h>
 
+#if _IS_BOOT == 0
+#include <lvgl/lvgl_api.h>
+#endif
 
 #include "stm32/stm32h735g-dk.h"
 #include "config.h"
@@ -23,6 +27,10 @@ int sys_kernel_request(int req, void *arg) {
 
 const void *sys_kernel_request_api(u32 request) {
   switch (request) {
+#if !_IS_BOOT
+  case LVGL_API_REQUEST:
+    return &lvgl_api;
+#endif
 #if INCLUDE_AUTH
   case CRYPT_SHA256_API_REQUEST:
     return &mbedtls_crypt_sha256_api;

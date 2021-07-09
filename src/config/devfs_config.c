@@ -301,7 +301,7 @@ const sdio_config_t sdio_config = {
                    | SDIO_FLAG_IS_CLOCK_POWER_SAVE_ENABLED
                    //| SDIO_FLAG_IS_HARDWARE_FLOW_CONTROL_ENABLED
                    | 0,
-        .freq = 16000000UL,
+        .freq = 24000000UL,
         .pin_assignment = {
             .clock = {2, 12},    // PC12
             .command = {3, 2},  // PD2
@@ -313,7 +313,6 @@ const sdio_config_t sdio_config = {
 
 
 u8 drive_sdio_dma_read_buffer[4096];
-
 drive_sdio_state_t drive_sdio_state MCU_SYS_MEM;
 const drive_sdio_config_t drive_sdio_config = {
     .dma_read_buffer = drive_sdio_dma_read_buffer,

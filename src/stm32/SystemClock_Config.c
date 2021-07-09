@@ -27,8 +27,9 @@ void SystemClock_Config() {
   }
 
   /* Enable HSE Oscillator and activate PLL with HSE as source */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI48|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.HSIState = RCC_HSI_OFF;
   RCC_OscInitStruct.CSIState = RCC_CSI_OFF;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -48,6 +49,9 @@ void SystemClock_Config() {
     }
   }
 
+
+//PLL3 is configured in the LCD init routine
+#if 0
   /* RK043FN48H LCD clock configuration */
   /* LCD clock configuration */
   /* PLL3_VCO Input = HSE_VALUE/PLL3M = 1 Mhz */
@@ -69,11 +73,12 @@ void SystemClock_Config() {
     while (1) {
     }
   }
+#endif
 
   /* PLL3 for USB Clock */
 #if 1
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USB;
-  PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_PLL3;
+  PeriphClkInitStruct.UsbClockSelection = RCC_USBCLKSOURCE_HSI48;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
     while (1) {
     }

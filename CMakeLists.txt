@@ -20,6 +20,7 @@ include(compiler_rt)
 include(newlib)
 include(StratifyOS)
 include(fatfs)
+include(lvgl)
 
 include(StratifyOS_${MCU}_debug_${SOS_ARCH})
 include(StratifyOS_${MCU}_release_${SOS_ARCH})
@@ -32,7 +33,7 @@ project(STM32H735G-DK)
 #Stratify Labs assigned hardware ID
 set(HARDWARE_ID 0x00000031)
 set(BOOT_START_ADDRESS 0x08000000)
-set(KERNEL_START_ADDRESS 0x08080000)
+set(KERNEL_START_ADDRESS 0x08040000)
 set(KERNEL_LINKER_FILE ldscripts/stm32h735xg-rom.ld)
 set(BOOT_LINKER_FILE ldscripts/stm32h735xg-rom.ld)
 
@@ -50,6 +51,7 @@ set(BOOT_LIBRARIES
 
 set(KERNEL_LIBRARIES
 	fatfs
+	lvgl_kernel
 	StratifyOS_sys
 	StratifyOS_${MCU}
 	StratifyOS_usbd
@@ -81,6 +83,7 @@ target_compile_definitions(${RELEASE_TARGET}
 	PUBLIC
 	${DEFINITIONS}
 	VECTOR_TABLE_ADDRESS=${KERNEL_START_ADDRESS}
+	_IS_BOOT=0
 	)
 target_compile_options(${RELEASE_TARGET} PUBLIC -Os)
 set_target_properties(${RELEASE_TARGET}
