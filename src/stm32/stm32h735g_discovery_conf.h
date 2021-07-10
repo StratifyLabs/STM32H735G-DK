@@ -62,7 +62,7 @@
 
 /* LCD defines */
 #define LCD_LAYER_0_ADDRESS                 0x70000000U
-#define LCD_LAYER_1_ADDRESS                 0x70040000U
+#define LCD_LAYER_1_ADDRESS                 0x70080000U
 #define USE_DMA2D_TO_FILL_RGB_RECT          0U
 #define USE_LCD_CTRL_RK043FN48H             1U
 
