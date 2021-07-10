@@ -48,10 +48,6 @@ void os_event_handler(int event, void *args) {
     break;
 
   case SOS_EVENT_ROOT_MPU_INITIALIZED:
-    SOS_DEBUG_LINE_TRACE();
-    stm32h735g_dk_init_lcd();
-    SOS_DEBUG_LINE_TRACE();
-
     // Allow full access to video memory
     mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION - 1, (void *)CONFIG_VIDEO_MEMORY_ADDRESS,
                       CONFIG_VIDEO_MEMORY_SIZE, MPU_ACCESS_PRW_URW,
@@ -84,9 +80,9 @@ void os_event_handler(int event, void *args) {
 #endif
 
     //start graphics
-    memset((void *)LCD_LAYER_0_ADDRESS, 0x00, CONFIG_VIDEO_MEMORY_SIZE/2);
-    memset((void *)LCD_LAYER_1_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
-    cortexm_svcall(svcall_flush_video_memory, 0);
+    //memset((void *)LCD_LAYER_0_ADDRESS, 0x00, CONFIG_VIDEO_MEMORY_SIZE/2);
+    //memset((void *)LCD_LAYER_1_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
+    //cortexm_svcall(svcall_flush_video_memory, 0);
 
 #if _IS_BOOT == 0
     SOS_DEBUG_LINE_TRACE();

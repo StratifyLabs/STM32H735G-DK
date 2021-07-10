@@ -6,11 +6,6 @@
 #include "stm32h735g_discovery_lcd.h"
 #include "stm32h735g_discovery_ospi.h"
 
-void stm32h735g_dk_init_lcd() {
-  BSP_LCD_InitEx(CONFIG_LCD_INSTANCE, LCD_ORIENTATION_LANDSCAPE,
-                 LCD_PIXEL_FORMAT_ARGB8888, LCD_DEFAULT_WIDTH,
-                 LCD_DEFAULT_HEIGHT);
-}
 
 void stm32h735g_dk_init_ospi_ram() {
   BSP_OSPI_RAM_Init_t ospi_ram_init = {};
