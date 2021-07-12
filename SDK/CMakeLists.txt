@@ -25,7 +25,7 @@ set(STRATIFYOS_LWIP_PATH
 	CACHE INTERNAL "LWIP INCLUDE PATHS")
 
 
-sdk_add_subdirectory(API v1.0)
+sdk_add_subdirectory(API main)
 include(${BASE_DIRECTORY}/API/libraries/API.cmake)
 
 set(BUILD_STM32H735 ON CACHE INTERNAL "ENABLE BUILDING OF H735")
@@ -38,5 +38,11 @@ sdk_add_subdirectory(StratifyOS-mcu-stm32 main)
 sdk_add_subdirectory(StratifyOS-fatfs v1.0)
 sdk_add_subdirectory(LvglAPI main)
 
+# Deploy config files
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/lv_conf.h
+	DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/LvglAPI/lvgl/include/lvgl)
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/stm32h7xx_hal_conf.h
+	DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/StratifyOS-mcu-stm32/src/stm32h7xx)
 
 

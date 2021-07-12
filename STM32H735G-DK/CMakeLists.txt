@@ -23,8 +23,8 @@ project(STM32H735G-DK)
 set(HARDWARE_ID 0x00000031)
 set(BOOT_START_ADDRESS 0x08000000)
 set(KERNEL_START_ADDRESS 0x08040000)
-set(KERNEL_LINKER_FILE ldscripts/stm32h735xg-rom.ld)
-set(BOOT_LINKER_FILE ldscripts/stm32h735xg-rom.ld)
+set(BOOT_LINKER_FILE stm32h735xg-rom.ld)
+set(KERNEL_LINKER_FILE ${BOOT_LINKER_FILE})
 
 set(DEFINITIONS
 	__BOOT_START_ADDRESS=${BOOT_START_ADDRESS}
@@ -75,6 +75,11 @@ target_compile_definitions(${RELEASE_TARGET}
 	_IS_BOOT=0
 	)
 target_compile_options(${RELEASE_TARGET} PUBLIC -Os)
+
+target_link_directories(${RELEASE_TARGET}
+	PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts)
+
 set_target_properties(${RELEASE_TARGET}
 	PROPERTIES
 	LINK_FLAGS
@@ -97,6 +102,11 @@ target_include_directories(${BOOT_RELEASE_TARGET}
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src
 	)
+target_link_directories(${BOOT_RELEASE_TARGET}
+	PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts)
+
+
 target_compile_definitions(${BOOT_RELEASE_TARGET}
 	PUBLIC
 	${DEFINITIONS}
