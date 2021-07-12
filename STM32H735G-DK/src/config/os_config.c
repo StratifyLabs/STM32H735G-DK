@@ -17,14 +17,15 @@
 
 #include "stm32/stm32h735g_discovery_lcd.h"
 
-void svcall_flush_video_memory(void * args){
+void svcall_flush_video_memory(void *args) {
   CORTEXM_SVCALL_ENTER();
-  MCU_UNUSED_ARGUMENT(args);\
+  MCU_UNUSED_ARGUMENT(args);
   SOS_DEBUG_LINE_TRACE();
 
   BSP_LCD_WritePixel(0, 10, 10, 0xffff);
 
-  sos_config.cache.clean_data_block((void *)CONFIG_VIDEO_MEMORY_ADDRESS, CONFIG_VIDEO_MEMORY_SIZE);
+  sos_config.cache.clean_data_block((void *)CONFIG_VIDEO_MEMORY_ADDRESS,
+                                    CONFIG_VIDEO_MEMORY_SIZE);
 }
 
 void os_event_handler(int event, void *args) {
@@ -49,18 +50,20 @@ void os_event_handler(int event, void *args) {
 
   case SOS_EVENT_ROOT_MPU_INITIALIZED:
     // Allow full access to video memory
-    mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION - 1, (void *)CONFIG_VIDEO_MEMORY_ADDRESS,
+    mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION - 1,
+                      (void *)CONFIG_VIDEO_MEMORY_ADDRESS,
                       CONFIG_VIDEO_MEMORY_SIZE, MPU_ACCESS_PRW_URW,
                       MPU_MEMORY_EXTERNAL_SRAM,
                       0 // executable
     );
 
-    //background access to app region -- allows caching for general access by appfs
-    mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION, (void *)CONFIG_APP_MEMORY_ADDRESS,
-                      CONFIG_APP_MEMORY_SIZE, MPU_ACCESS_PRW_UR,
-                      MPU_MEMORY_EXTERNAL_SRAM,
+    // background access to app region -- allows caching for general access by
+    // appfs
+    mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION,
+                      (void *)CONFIG_APP_MEMORY_ADDRESS, CONFIG_APP_MEMORY_SIZE,
+                      MPU_ACCESS_PRW_UR, MPU_MEMORY_EXTERNAL_SRAM,
                       0 // executable
-                      );
+    );
     break;
 
   case SOS_EVENT_ROOT_INVALID_PIN_ASSIGNMENT: {
@@ -71,6 +74,10 @@ void os_event_handler(int event, void *args) {
 
   case SOS_EVENT_START_LINK:
     SOS_DEBUG_LINE_TRACE();
+#if _IS_BOOT == 0
+    lvgl_config_initialize_display();
+#endif
+    SOS_DEBUG_LINE_TRACE();
 
 #if INCLUDE_ETHERNET
     // start LWIP
@@ -79,17 +86,7 @@ void os_event_handler(int event, void *args) {
     lwip_api.startup(&lwip_api);
 #endif
 
-    //start graphics
-    //memset((void *)LCD_LAYER_0_ADDRESS, 0x00, CONFIG_VIDEO_MEMORY_SIZE/2);
-    //memset((void *)LCD_LAYER_1_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
-    //cortexm_svcall(svcall_flush_video_memory, 0);
-
-#if _IS_BOOT == 0
     SOS_DEBUG_LINE_TRACE();
-    lvgl_config_init();
-    SOS_DEBUG_LINE_TRACE();
-#endif
-
     sos_debug_log_info(SOS_DEBUG_USER0, "Start LED %d");
     sos_led_startup();
     sos_debug_log_info(SOS_DEBUG_USER0, "Start Link");
@@ -97,12 +94,9 @@ void os_event_handler(int event, void *args) {
   }
 }
 
-pthread_t os_start_thread(
-    void *(*thread_function)(void *),
-    void *thread_argument,
-    u32 stack_size,
-    int scheduler_policy,
-    int scheduler_priority) {
+pthread_t os_start_thread(void *(*thread_function)(void *),
+                          void *thread_argument, u32 stack_size,
+                          int scheduler_policy, int scheduler_priority) {
   int result;
   pthread_attr_t attr;
   pthread_t tmp;

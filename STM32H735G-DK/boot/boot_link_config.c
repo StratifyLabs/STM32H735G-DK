@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <mcu/pio.h>
 #include <unistd.h>
-#include <stm32/stm32_types.h>
+#include <stm32_types.h>
 
 #include "boot_link_config.h"
 #include "config.h"

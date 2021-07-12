@@ -1,5 +1,5 @@
 
-#include <stm32/stm32_config.h>
+#include <stm32_config.h>
 
 #include "config.h"
 #include "clock_config.h"

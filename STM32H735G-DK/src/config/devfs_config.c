@@ -22,7 +22,7 @@
 #include <sys/lock.h>
 #include <device/drive_sdio.h>
 
-#include <stm32/stm32_types.h>
+#include <stm32_types.h>
 
 #include "config.h"
 #include "link_config.h"

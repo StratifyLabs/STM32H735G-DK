@@ -1,4 +1,4 @@
-#include <stm32/stm32_config.h>
+#include <stm32_config.h>
 
 int usb_set_attributes(const devfs_handle_t *handle, void *ctl) {
   return stm32_usb_set_attributes(handle, ctl);

@@ -2,8 +2,8 @@
 #include <cortexm/task.h>
 #include <sos/debug.h>
 #include <sos/sos.h>
-#include <stm32/stm32_config.h>
-#include <stm32/stm32_types.h>
+#include <stm32_config.h>
+#include <stm32_types.h>
 
 #include "config.h"
 #include "debug_config.h"

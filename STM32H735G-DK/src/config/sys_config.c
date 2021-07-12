@@ -1,13 +1,14 @@
 
 
-#include <stm32/stm32_config.h>
+#include <stm32_config.h>
 
 #if _IS_BOOT == 0
-#include <lvgl/lvgl_api.h>
+#include <lvgl_api.h>
 #endif
 
 #include "stm32/stm32h735g-dk.h"
 #include "config.h"
+#include "lvgl_config.h"
 
 void sys_initialize() {
   stm32_initialize();
@@ -19,9 +20,18 @@ void sys_get_serial_number(mcu_sn_t *serial_number) {
   stm32_get_serial_number(serial_number);
 }
 
-int sys_kernel_request(int req, void *arg) {
-  MCU_UNUSED_ARGUMENT(req);
+int sys_kernel_request(int request, void *arg) {
   MCU_UNUSED_ARGUMENT(arg);
+
+#if _IS_BOOT == 0
+  if( request == LVGL_REQUEST_START ){
+    lvgl_config_start();
+    return 0;
+  }
+#else
+  MCU_UNUSED_ARGUMENT(request);
+#endif
+
   return -1;
 }
 

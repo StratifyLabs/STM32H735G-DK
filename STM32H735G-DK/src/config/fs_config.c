@@ -3,7 +3,7 @@
 #include <mcu/flash.h>
 #include <sos/dev/appfs.h>
 
-#include <fatfs/fatfs.h>
+#include <fatfs.h>
 
 #include "config.h"
 #include "devfs_config.h"

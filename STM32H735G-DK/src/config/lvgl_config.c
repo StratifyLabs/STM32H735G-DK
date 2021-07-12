@@ -10,14 +10,16 @@
 #include "stm32/stm32h735g_discovery_lcd.h"
 #include "stm32/stm32h735g_discovery_ts.h"
 
+
+
 #if _IS_BOOT == 0
 
 #define SCREEN_MEM_SIZE (LCD_DEFAULT_WIDTH * LCD_DEFAULT_HEIGHT * 4)
 
 /*Static or global buffer(s). The second buffer is optional*/
-
 static void svcall_init_hardware(void * args){
   CORTEXM_SVCALL_ENTER();
+  MCU_UNUSED_ARGUMENT(args);
 
   BSP_LCD_InitEx(CONFIG_LCD_INSTANCE, LCD_ORIENTATION_LANDSCAPE,
                  LCD_PIXEL_FORMAT_ARGB8888, LCD_DEFAULT_WIDTH,
@@ -92,7 +94,6 @@ static void touch_read_callback(lv_indev_drv_t *drv, lv_indev_data_t *data) {
   cortexm_svcall(svcall_touch_read, &state);
 
   if(state.TouchDetected) {
-    sos_debug_printf("Touch: %d,%d\n", state.TouchX, state.TouchY);
     data->point.x = state.TouchX * 480 / 287;
     data->point.y = state.TouchY * 272 / 153;
     data->state = LV_INDEV_STATE_PRESSED;
@@ -104,11 +105,6 @@ static void touch_read_callback(lv_indev_drv_t *drv, lv_indev_data_t *data) {
 static void *tick_thread(void *args) {
   MCU_UNUSED_ARGUMENT(args);
 
-  lv_obj_t *tv = lv_tabview_create(lv_scr_act(), LV_DIR_TOP, LV_PCT(15));
-  lv_tabview_add_tab(tv, "Tab1");
-  lv_tabview_add_tab(tv, "Tab2");
-  lv_tabview_add_tab(tv, "Tab3");
-
   while (1) {
     usleep(5 * 1000); /*Sleep for 5 millisecond*/
     lv_tick_inc(5);   /*Tell LVGL that 5 milliseconds were elapsed*/
@@ -118,14 +114,13 @@ static void *tick_thread(void *args) {
 
 static void print_callback(const char *value) { sos_debug_printf(value); }
 
-void lvgl_config_init() {
+void lvgl_config_start() {
 
-
-
-  cortexm_svcall(svcall_init_hardware, NULL);
+  SOS_DEBUG_LINE_TRACE();
 
   lv_log_register_print_cb(print_callback);
-  lvgl_api_initialize();
+  lv_init();
+  lvgl_api_initialize_filesystem();
 
   static lv_disp_draw_buf_t disp_buf = {};
   lv_disp_draw_buf_init(&disp_buf, (lv_color_t *)LCD_LAYER_0_ADDRESS,
@@ -148,11 +143,23 @@ void lvgl_config_init() {
   indev_drv.type = LV_INDEV_TYPE_POINTER;  /*See below.*/
   indev_drv.read_cb = touch_read_callback; /*See below.*/
   /*Register the driver in LVGL and save the created input device object*/
-  SOS_DEBUG_LINE_TRACE();
   lv_indev_drv_register(&indev_drv);
-  SOS_DEBUG_LINE_TRACE();
 
-  os_start_thread(tick_thread, NULL, 4096, SCHED_FIFO, 5);
+#if 0
+  os_start_thread(tick_thread, NULL, 16384, SCHED_FIFO, 5);
+#endif
+}
+
+void lvgl_config_initialize_display(){
+  SOS_DEBUG_LINE_TRACE();
+  cortexm_svcall(svcall_init_hardware, NULL);
+  SOS_DEBUG_LINE_TRACE();
+  //Clear the display
+  //memset((void *)LCD_LAYER_0_ADDRESS, 0x00, CONFIG_VIDEO_MEMORY_SIZE/2);
+  SOS_DEBUG_LINE_TRACE();
+  memset((void *)LCD_LAYER_1_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
+  SOS_DEBUG_LINE_TRACE();
+  cortexm_svcall(svcall_flush, (void*)LCD_LAYER_1_ADDRESS);
 }
 
 #endif
