@@ -2,11 +2,10 @@ cmake_minimum_required (VERSION 3.19)
 
 set(SDK_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/SDK)
 set(SDK_PATH ${SDK_DIRECTORY}/StratifyLabs-SDK)
+set(BINARY_PATH ${SDK_PATH}/bin)
 
 file(MAKE_DIRECTORY ${SDK_PATH})
 set(DEPENDENCIES_DIRECTORY ${SDK_DIRECTORY}/dependencies)
-
-set(ENV{SOS_SDK_PATH} ${SDK_PATH})
 
 if(NOT EXISTS ${SDK_PATH}/bin/sl)
 	# Grab sl and put it in the SDK
