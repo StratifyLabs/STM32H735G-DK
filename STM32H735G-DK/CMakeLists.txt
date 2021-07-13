@@ -51,6 +51,12 @@ set(KERNEL_LIBRARIES
 	StratifyOS_${MCU}
 	compiler_rt)
 
+set(LDSCRIPT_SOURCES
+	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/stm32h735xg-rom.ld
+	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/stm32h7xx.ld
+	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/stm32-common.ld
+	)
+
 sos_sdk_add_subdirectory(KERNEL_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/src)
 sos_sdk_add_subdirectory(BOOT_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/boot)
 
@@ -63,7 +69,9 @@ target_sources(${RELEASE_TARGET}
 	PUBLIC
 	${KERNEL_SOURCELIST}
 	${CMAKE_CURRENT_SOURCE_DIR}/sl_settings.json
+	${LDSCRIPT_SOURCES}
 	)
+
 target_include_directories(${RELEASE_TARGET}
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src

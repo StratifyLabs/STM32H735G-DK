@@ -10,8 +10,6 @@
 #include "stm32/stm32h735g_discovery_lcd.h"
 #include "stm32/stm32h735g_discovery_ts.h"
 
-
-
 #if _IS_BOOT == 0
 
 #define SCREEN_MEM_SIZE (LCD_DEFAULT_WIDTH * LCD_DEFAULT_HEIGHT * 4)
@@ -102,21 +100,9 @@ static void touch_read_callback(lv_indev_drv_t *drv, lv_indev_data_t *data) {
   }
 }
 
-static void *tick_thread(void *args) {
-  MCU_UNUSED_ARGUMENT(args);
-
-  while (1) {
-    usleep(5 * 1000); /*Sleep for 5 millisecond*/
-    lv_tick_inc(5);   /*Tell LVGL that 5 milliseconds were elapsed*/
-    lv_timer_handler();
-  }
-}
-
 static void print_callback(const char *value) { sos_debug_printf(value); }
 
 void lvgl_config_start() {
-
-  SOS_DEBUG_LINE_TRACE();
 
   lv_log_register_print_cb(print_callback);
   lv_init();
@@ -145,21 +131,15 @@ void lvgl_config_start() {
   /*Register the driver in LVGL and save the created input device object*/
   lv_indev_drv_register(&indev_drv);
 
-#if 0
-  os_start_thread(tick_thread, NULL, 16384, SCHED_FIFO, 5);
-#endif
 }
 
 void lvgl_config_initialize_display(){
-  SOS_DEBUG_LINE_TRACE();
   cortexm_svcall(svcall_init_hardware, NULL);
-  SOS_DEBUG_LINE_TRACE();
   //Clear the display
-  //memset((void *)LCD_LAYER_0_ADDRESS, 0x00, CONFIG_VIDEO_MEMORY_SIZE/2);
-  SOS_DEBUG_LINE_TRACE();
   memset((void *)LCD_LAYER_1_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
-  SOS_DEBUG_LINE_TRACE();
   cortexm_svcall(svcall_flush, (void*)LCD_LAYER_1_ADDRESS);
+
+  //lvgl_config_start();
 }
 
 #endif

@@ -21,7 +21,7 @@
  *====================*/
 
 /*Color depth: 1 (1 byte per pixel), 8 (RGB332), 16 (RGB565), 32 (ARGB8888)*/
-#define LV_COLOR_DEPTH     16
+#define LV_COLOR_DEPTH     32
 
 /*Swap the 2 bytes of RGB565 color. Useful if the display has a 8 bit interface (e.g. SPI)*/
 #define LV_COLOR_16_SWAP   0
@@ -42,7 +42,7 @@
 #define LV_MEM_CUSTOM      1
 #if LV_MEM_CUSTOM == 0
 /*Size of the memory available for `lv_mem_alloc()` in bytes (>= 2kB)*/
-#  define LV_MEM_SIZE    (256U * 1024U)          /*[bytes]*/
+#  define LV_MEM_SIZE    (128U * 1024U)          /*[bytes]*/
 
 /*Set an address for the memory pool instead of allocating it as a normal array. Can be in external SRAM too.*/
 #  define LV_MEM_ADR          0     /*0: unused*/
@@ -54,7 +54,7 @@
 #endif     /*LV_MEM_CUSTOM*/
 
 /*Use the standard `memcpy` and `memset` instead of LVGL's own functions. (Might or might not be faster).*/
-#define LV_MEMCPY_MEMSET_STD    0
+#define LV_MEMCPY_MEMSET_STD    1
 
 /*====================
    HAL SETTINGS
@@ -76,7 +76,7 @@
 
 /*Default Dot Per Inch. Used to initialize default sizes such as widgets sized, style paddings.
  *(Not so important, you can adjust it to modify default sizes and spaces)*/
-#define LV_DPI_DEF                  130     /*[px/inch]*/
+#define LV_DPI_DEF                  120     /*[px/inch]*/
 
 /*=======================
  * FEATURE CONFIGURATION
@@ -147,11 +147,11 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
  *LV_LOG_LEVEL_ERROR       Only critical issue, when the system may fail
  *LV_LOG_LEVEL_USER        Only logs added by the user
  *LV_LOG_LEVEL_NONE        Do not log anything*/
-#  define LV_LOG_LEVEL    LV_LOG_LEVEL_INFO
+#  define LV_LOG_LEVEL    LV_LOG_LEVEL_TRACE
 
 /*1: Print the log with 'printf'
  *0: User need to register a callback with `lv_log_register_print_cb()`*/
-#  define LV_LOG_PRINTF   1
+#  define LV_LOG_PRINTF   0
 
 /*Enable/disable LV_LOG_TRACE in modules that produces a huge number of logs*/
 #  define LV_LOG_TRACE_MEM            1
@@ -196,7 +196,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 #define LV_USE_REFR_DEBUG       0
 
 /*Change the built in (v)snprintf functions*/
-#define LV_SPRINTF_CUSTOM   0
+#define LV_SPRINTF_CUSTOM   1
 #if LV_SPRINTF_CUSTOM
 #  define LV_SPRINTF_INCLUDE <stdio.h>
 #  define lv_snprintf     snprintf
@@ -479,7 +479,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 # define LV_THEME_DEFAULT_GROW              1
 
 /*Default transition time in [ms]*/
-# define LV_THEME_DEFAULT_TRANSITON_TIME    80
+# define LV_THEME_DEFAULT_TRANSITON_TIME    50
 #endif /*LV_USE_THEME_DEFAULT*/
 
 /*An very simple them that is a good starting point for a custom theme*/
@@ -503,7 +503,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 *==================*/
 
 /*Enable the examples to be built with the library*/
-#define LV_BUILD_EXAMPLES   1
+#define LV_BUILD_EXAMPLES   0
 
 /*--END OF LV_CONF_H--*/
 

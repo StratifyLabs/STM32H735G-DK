@@ -9,7 +9,7 @@
 #include "devfs_config.h"
 #include "fs_config.h"
 
-#define USE_EXTERNAL_RAM 0
+#define USE_EXTERNAL_RAM 1
 #define USE_INTERNAL_RAM 1
 
 #define RAM_PAGES (320 - (CONFIG_SYSTEM_MEMORY_SIZE / MCU_RAM_PAGE_SIZE))

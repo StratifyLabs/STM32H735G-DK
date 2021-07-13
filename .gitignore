@@ -5,4 +5,7 @@ SDK/dependencies
 SDK/StratifyLabs-SDK
 SDK/*.bin
 SDK/*.exe
+apps/*/
 
+sl_report.txt
+profile.sh

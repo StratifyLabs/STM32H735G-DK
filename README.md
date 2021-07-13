@@ -15,5 +15,14 @@ cmake .. -DIS_PULL=ON -GNinja
 ninja
 ```
 
-To create an application SDK for this 
+To create an application SDK for this project:
+
+```sh
+cd cmake_arm
+ninja install
+cd ..
+sl os.pack:name=STM32H735G-DK-SDK
+```
+
+The above will create a file called `SDK/STM32H735G-DK-SDK.<bin|exe>`. Add this file to your Github release add this file to your github release.
 

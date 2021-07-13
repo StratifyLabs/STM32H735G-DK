@@ -25,3 +25,4 @@ set(SOS_ARCH_LIST "")
 
 add_subdirectory(SDK SDK)
 add_subdirectory(STM32H735G-DK)
+add_subdirectory(apps)
