@@ -3,3 +3,6 @@ cmake_arm/
 CMakeLists.txt.user
 SDK/dependencies
 SDK/StratifyLabs-SDK
+SDK/*.bin
+SDK/*.exe
+

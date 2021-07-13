@@ -7,11 +7,13 @@ To build:
 ```sh
 git clone https://github.com/StratifyLabs/STM32H735G-DK
 cd STM32H735G-DK
-source profile.sh
 cmake -P ./bootstrap.cmake
-mkdir cmake_arm
+# If needed login to sl and run cmake -P ./bootstrap.cmake again
+source profile.sh
 cd cmake_arm
 cmake .. -DIS_PULL=ON -GNinja
-ninja install
+ninja
 ```
+
+To create an application SDK for this 
 
