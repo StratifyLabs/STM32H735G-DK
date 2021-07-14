@@ -57,7 +57,6 @@ void debug_initialize() {
     cortexm_delay_ms(200);
   }
 #endif
-
 }
 
 void debug_write(const void *buf, int nbyte) {
@@ -78,20 +77,39 @@ void debug_disable_led() {
   HAL_GPIO_WritePin(DEBUG_LED_PORT, DEBUG_LED_PINMASK, GPIO_PIN_SET);
 }
 
-#define TRACE_COUNT 16
+#define TRACE_COUNT 64
 #define TRACE_FRAME_SIZE sizeof(link_trace_event_t)
 #define TRACE_BUFFER_SIZE (sizeof(link_trace_event_t) * TRACE_COUNT)
-static char trace_buffer[TRACE_FRAME_SIZE * TRACE_COUNT];
+
+static char trace_buffer[TRACE_FRAME_SIZE * TRACE_COUNT] DEBUG_TRACE_MEMORY;
 const ffifo_config_t debug_trace_config = {.frame_count = TRACE_COUNT,
                                            .frame_size =
                                                sizeof(link_trace_event_t),
                                            .buffer = trace_buffer};
-ffifo_state_t debug_trace_state;
+ffifo_state_t debug_trace_state DEBUG_TRACE_MEMORY;
+u16 debug_trace_checksum DEBUG_TRACE_MEMORY;
+
+static u16 get_checksum() {
+  const u16 *check = (const u16 *)&debug_trace_state;
+  u16 checksum = 0;
+  for (size_t i = 0; i < sizeof(ffifo_state_t) / sizeof(u16); i++) {
+    checksum += check[i];
+  }
+  return checksum;
+}
 
 void debug_trace_event(void *event) {
   link_trace_event_header_t *header = event;
   devfs_async_t async;
   const devfs_device_t *trace_dev = &(sos_config.fs.devfs_list[0]);
+
+
+  const u16 checksum =get_checksum();
+  // if the checksum is wrong -- reset the state
+  if (checksum != debug_trace_checksum) {
+    debug_trace_state = (ffifo_state_t){};
+    debug_trace_checksum = get_checksum();
+  }
 
   // write the event to the fifo
   memset(&async, 0, sizeof(devfs_async_t));
@@ -100,4 +118,7 @@ void debug_trace_event(void *event) {
   async.nbyte = header->size;
   async.flags = O_RDWR;
   trace_dev->driver.write(&(trace_dev->handle), &async);
+
+  debug_trace_checksum = get_checksum();
+
 }

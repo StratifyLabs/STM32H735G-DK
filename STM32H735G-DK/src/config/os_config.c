@@ -50,8 +50,8 @@ void os_event_handler(int event, void *args) {
     break;
 
   case SOS_EVENT_ROOT_MPU_INITIALIZED:
+
     // Allow full access to video memory
-    SOS_DEBUG_LINE_TRACE();
     mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION - 1,
                       (void *)CONFIG_VIDEO_MEMORY_ADDRESS,
                       CONFIG_VIDEO_MEMORY_SIZE, MPU_ACCESS_PRW_URW,
@@ -59,7 +59,6 @@ void os_event_handler(int event, void *args) {
                       0 // executable
     );
 
-    SOS_DEBUG_LINE_TRACE();
     // background access to app region -- allows caching for general access by
     // appfs
     mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION,
@@ -67,7 +66,6 @@ void os_event_handler(int event, void *args) {
                       MPU_ACCESS_PRW_UR, MPU_MEMORY_EXTERNAL_SRAM,
                       0 // executable
     );
-    SOS_DEBUG_LINE_TRACE();
     break;
 
   case SOS_EVENT_ROOT_INVALID_PIN_ASSIGNMENT: {
@@ -77,12 +75,8 @@ void os_event_handler(int event, void *args) {
   } break;
 
   case SOS_EVENT_START_LINK:
-    SOS_DEBUG_LINE_TRACE();
 #if _IS_BOOT == 0
-    SOS_DEBUG_LINE_TRACE();
-    usleep(5000);
     lvgl_config_initialize_display();
-    SOS_DEBUG_LINE_TRACE();
 #endif
 
 #if INCLUDE_ETHERNET

@@ -26,7 +26,6 @@ const stm32_config_t stm32_config = {
     .flash_program_millivolts = 3300,
     .usb =
         {
-
             .rx_buffer = stm32_usb_rx_buffer,
             .rx_buffer_size = USB_RX_BUFFER_SIZE,
             .rx_fifo_word_size =

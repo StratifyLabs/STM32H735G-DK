@@ -6,6 +6,9 @@ set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 message(STATUS "Base directory ${BASE_DIRECTORY}")
 
+option(IS_TESTSUITE ON)
+option(IS_DEMO OFF)
+
 macro(sdk_add_subdirectory NAME BRANCH)
 	if(IS_PULL OR NOT EXISTS ${BASE_DIRECTORY}/${NAME})
 		sos_sdk_git_clone_or_pull_branch(${BASE_DIRECTORY} ${NAME} ssh://git@github.com/StratifyLabs/${NAME}.git ${BRANCH})
@@ -13,10 +16,14 @@ macro(sdk_add_subdirectory NAME BRANCH)
 	add_subdirectory(${BASE_DIRECTORY}/${NAME} ${NAME})
 endmacro()
 
-sdk_add_subdirectory(HelloWorld main)
-sdk_add_subdirectory(Blinky main)
+if(IS_DEMO)
+	sdk_add_subdirectory(HelloWorld main)
+	sdk_add_subdirectory(Blinky main)
+endif()
 sdk_add_subdirectory(SystemApps main)
-sdk_add_subdirectory(testsuite main)
+if(IS_TESTSUITE)
+	sdk_add_subdirectory(testsuite main)
+endif()
 
 
 

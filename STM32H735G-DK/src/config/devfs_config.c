@@ -28,6 +28,8 @@
 #include "link_config.h"
 #include "sl_config.h"
 
+#include "debug_config.h"
+
 #if INCLUDE_ETHERNET
 #include "ethernet/lwip_config.h"
 #include "ethernet/netif_lan8742a.h"
@@ -369,10 +371,8 @@ const tmr_config_t tmr3_config = {
  */
 const devfs_device_t devfs_list[] = {
 // System devices
-#if 0
-    DEVFS_DEVICE("trace", ffifo, 0, &board_trace_config, &board_trace_state,
+    DEVFS_DEVICE("trace", ffifo, 0, &debug_trace_config, &debug_trace_state,
                  0666, SYSFS_ROOT, S_IFCHR),
-#endif
     DEVFS_DEVICE("stdio-out", fifo, 0, &stdio_out_config, &stdio_out_state,
                  0666, SYSFS_ROOT, S_IFCHR),
     DEVFS_DEVICE("stdio-in", fifo, 0, &stdio_in_config, &stdio_in_state, 0666,

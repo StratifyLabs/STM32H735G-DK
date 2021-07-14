@@ -164,6 +164,10 @@ void SystemClock_Config() {
   __HAL_RCC_CRC_CLK_ENABLE();
 
   HAL_PWREx_EnableUSBVoltageDetector();
+
+  //HAL_PWREx_ConfigD3Domain(PWR_D3_DOMAIN_RUN);
+  HAL_PWR_EnableBkUpAccess();
+
 }
 
 void MPU_Config(void)

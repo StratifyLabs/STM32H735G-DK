@@ -1,4 +1,4 @@
-
+﻿
 #include <lvgl.h>
 #include <lvgl_api.h>
 #include <sos/config.h>
@@ -24,7 +24,7 @@ static void svcall_init_hardware(void * args){
                  LCD_DEFAULT_HEIGHT);
 
 
-  TS_Init_t hTS;
+  TS_Init_t hTS = {};
   hTS.Orientation = TS_SWAP_XY;
   hTS.Accuracy = 0;
   hTS.Width = LCD_DEFAULT_WIDTH;
@@ -106,6 +106,7 @@ void lvgl_config_start() {
 
   lv_log_register_print_cb(print_callback);
   lv_init();
+
   lvgl_api_initialize_filesystem();
 
   static lv_disp_draw_buf_t disp_buf = {};
@@ -136,10 +137,10 @@ void lvgl_config_start() {
 void lvgl_config_initialize_display(){
   cortexm_svcall(svcall_init_hardware, NULL);
   //Clear the display
+  memset((void *)LCD_LAYER_0_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
   memset((void *)LCD_LAYER_1_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
   cortexm_svcall(svcall_flush, (void*)LCD_LAYER_1_ADDRESS);
 
-  //lvgl_config_start();
 }
 
 #endif
