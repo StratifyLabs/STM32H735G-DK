@@ -8,7 +8,7 @@
 #include "config/os_config.h"
 #include "sl_config.h"
 
-#define CONFIG_SYSTEM_MEMORY_SIZE (64 * 1024)
+#define CONFIG_SYSTEM_MEMORY_SIZE (256 * 1024)
 #define CONFIG_SYSTEM_CLOCK 292000000
 
 #define CONFIG_STDIO_BUFFER_SIZE 528
