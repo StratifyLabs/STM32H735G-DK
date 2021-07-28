@@ -1,10 +1,11 @@
 
+
+#include <cortexm/mpu.h>
 #include <device/cfifo.h>
 #include <device/fifo.h>
 #include <device/sys.h>
 #include <device/uartfifo.h>
 #include <device/usbfifo.h>
-#include <cortexm/mpu.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <mcu/mcu.h>
@@ -35,10 +36,8 @@
 #include "config.h"
 #if _IS_BOOT
 #include "../boot/boot_config.h"
-#include "../boot/boot_link_config.h"
-#else
-#include "link_config.h"
 #endif
+#include "link_config.h"
 #include "sl_config.h"
 
 #define WRITE_BACK_NO_WRITE_ALLOCATE                                           \
@@ -55,10 +54,9 @@
 
 // Stratify OS Configuration-------------------------------------------
 
-SOS_DECLARE_SECRET_KEY_32(secret_key)
+SOS_DECLARE_PUBLIC_KEY_64(public_key)
 
 const sos_config_t sos_config MCU_ALIGN(8) = {
-#if !_IS_BOOT
     .fs = {.devfs_list = devfs_list,
            .rootfs_list = sysfs_list,
            .stdin_dev = "/dev/stdio-in",
@@ -74,8 +72,7 @@ const sos_config_t sos_config MCU_ALIGN(8) = {
               .microseconds = clock_microseconds,
               .nanoseconds = NULL},
 
-    .task = {.task_total = CONFIG_TASK_TOTAL,
-             .start_stack_size = SOS_DEFAULT_START_STACK_SIZE,
+    .task = {.start_stack_size = 2048,
              .start = sos_default_thread,
              .start_args = &link_transport},
 
@@ -83,7 +80,6 @@ const sos_config_t sos_config MCU_ALIGN(8) = {
               .hibernate = sleep_hibernate,
               .powerdown = sleep_powerdown},
 
-#endif
     .usb = {.control_endpoint_max_size = 64,
             .set_attributes = usb_set_attributes,
             .set_action = usb_set_action,
@@ -132,17 +128,15 @@ const sos_config_t sos_config MCU_ALIGN(8) = {
             .mcu_git_hash = NULL,
             .id = SL_CONFIG_DOCUMENT_ID,
             .team_id = SL_CONFIG_TEAM_ID,
-            .secret_key_size = 32,
-            .secret_key_address = secret_key,
+            .secret_key_size = 64,
+            .secret_key_address = public_key,
             .vector_table = (void *)(VECTOR_TABLE_ADDRESS),
             .pio_write = sys_pio_write,
             .pio_read = sys_pio_read,
             .pio_set_attributes = sys_pio_set_attributes,
             .core_clock_frequency = CONFIG_SYSTEM_CLOCK,
-#if !_IS_BOOT
             .kernel_request = sys_kernel_request,
             .kernel_request_api = sys_kernel_request_api
-#endif
     },
 
     .debug = {.initialize = debug_initialize,
@@ -164,13 +158,7 @@ const sos_config_t sos_config MCU_ALIGN(8) = {
              .flash_handle = {},
              .flash_erase_page = mcu_flash_erasepage,
              .flash_write_page = mcu_flash_writepage,
-             .link_transport_driver = &boot_link_usb_transport},
-    .event_handler = boot_event_handler,
-#else
-    .event_handler = os_event_handler,
+             .link_transport_driver = NULL},
 #endif
+    .event_handler = os_event_handler,
     .socket_api = SOCKET_API};
-
-// This declares the task tables required by Stratify OS for applications and
-// threads
-SOS_DECLARE_TASK_TABLE(CONFIG_TASK_TOTAL);

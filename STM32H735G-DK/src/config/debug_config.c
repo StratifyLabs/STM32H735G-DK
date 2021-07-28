@@ -7,6 +7,7 @@
 
 #include "config.h"
 #include "debug_config.h"
+#include "fs_config.h"
 
 #if ___debug
 static UART_HandleTypeDef m_huart MCU_SYS_MEM;
@@ -101,7 +102,7 @@ static u16 get_checksum() {
 void debug_trace_event(void *event) {
   link_trace_event_header_t *header = event;
   devfs_async_t async;
-  const devfs_device_t *trace_dev = &(sos_config.fs.devfs_list[0]);
+  const devfs_device_t *trace_dev = &(sos_config.fs.devfs_list[DEVFS_OFFSET]);
 
 
   const u16 checksum =get_checksum();

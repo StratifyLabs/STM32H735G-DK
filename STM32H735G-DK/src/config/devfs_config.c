@@ -1,4 +1,6 @@
 
+#include <sdk/types.h>
+
 #include <device/auth.h>
 #include <device/cfifo.h>
 #include <device/device_fifo.h>
@@ -8,6 +10,8 @@
 #include <device/uartfifo.h>
 #include <device/usbfifo.h>
 
+#include <device/auth_flash.h>
+#include <device/drive_sdio.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <mcu/mcu.h>
@@ -20,7 +24,6 @@
 #include <sos/link.h>
 #include <sos/sos.h>
 #include <sys/lock.h>
-#include <device/drive_sdio.h>
 
 #include <stm32_types.h>
 
@@ -51,6 +54,9 @@
  *
  *
  */
+
+// SD Card
+#if !_IS_BOOT
 
 adc_state_t adc0_dma_state MCU_SYS_MEM;
 const stm32_adc_dma_config_t adc0_dma_config = {
@@ -86,7 +92,6 @@ const stm32_adc_dma_config_t adc0_dma_config = {
                               STM32_DMA_FLAG_IS_PERIPH_HALFWORD |
                               STM32_DMA_FLAG_IS_MEMORY_SINGLE,
                    .priority = STM32_DMA_PRIORITY_HIGH}};
-
 
 char uart1_fifo_buffer[64];
 fifo_config_t uart1_fifo_config = {.size = 64, .buffer = uart1_fifo_buffer};
@@ -129,16 +134,15 @@ stm32_uart_dma_config_t uart1_dma_config = {
                .o_flags = STM32_DMA_FLAG_IS_MEMORY_TO_PERIPH | UART_DMA_FLAGS |
                           STM32_DMA_FLAG_IS_NORMAL}}};
 
-
 // I2C4 -- connects to display
 i2c_state_t i2c3_state MCU_SYS_MEM;
-const i2c_config_t i2c3_config = {
-    .port = 0,
-    .attr = {.o_flags = I2C_FLAG_SET_MASTER,
-             .freq = 100000,
-             .pin_assignment = {.scl = {5, 14}, //PF14
-                                .sda = {5, 15} //PF15
-             }}};
+const i2c_config_t i2c3_config = {.port = 0,
+                                  .attr = {.o_flags = I2C_FLAG_SET_MASTER,
+                                           .freq = 100000,
+                                           .pin_assignment = {
+                                               .scl = {5, 14}, // PF14
+                                               .sda = {5, 15}  // PF15
+                                           }}};
 
 #define SPI_DMA_FLAGS                                                          \
   STM32_DMA_FLAG_IS_NORMAL | STM32_DMA_FLAG_IS_MEMORY_SINGLE |                 \
@@ -257,88 +261,31 @@ const stm32_eth_dma_config_t
 
 #endif
 
-#if !defined SOS_BOARD_USB_PORT
-#define SOS_BOARD_USB_PORT 0
-#endif
-
-#define USB_DEVICE_FIFO_BUFFER_SIZE 64
-char usb_device_fifo_buffer[USB_DEVICE_FIFO_BUFFER_SIZE] MCU_SYS_MEM;
-u8 usb_device_fifo_read_buffer[USB_DEVICE_FIFO_BUFFER_SIZE] MCU_SYS_MEM;
-device_fifo_state_t usb_device_fifo_state MCU_SYS_MEM;
-usb_state_t usb_device_state MCU_SYS_MEM;
-const usb_config_t usb_device_config = {
-    .port = SOS_BOARD_USB_PORT, .attr = {
-                                    .pin_assignment = {
-                                        .dm = {0xff, 0xff},
-                                        .dp = {0xff, 0xff},
-                                        .id = {0xff, 0xff},
-                                        .vbus = {0xff, 0xff},
-                                    }
-                                }};
-
-const device_fifo_config_t usb_device_fifo_config = {
-    .device = DEVFS_DEVICE("usb", mcu_usb, 0, &usb_device_config,
-                           &usb_device_state, 0666, SYSFS_ROOT, S_IFCHR),
-    .read_location = SOS_LINK_TRANSPORT_USB_BULK_ENDPOINT,
-    .write_location = SOS_LINK_TRANSPORT_USB_BULK_ENDPOINT | 0x80,
-    .fifo =
-        {
-            .buffer = usb_device_fifo_buffer,
-            .size = USB_DEVICE_FIFO_BUFFER_SIZE,
-        },
-    .read_buffer = usb_device_fifo_read_buffer,
-    .read_buffer_size = USB_DEVICE_FIFO_BUFFER_SIZE,
-};
-
-
-
-//SD Card
-#if !_IS_BOOT
 sdio_state_t sdio_state MCU_SYS_MEM;
 const sdio_config_t sdio_config = {
     .port = 0,
-    .attr = {
-        .o_flags = SDIO_FLAG_SET_INTERFACE | SDIO_FLAG_IS_BUS_WIDTH_4
-                   | SDIO_FLAG_IS_CLOCK_RISING
-                   | SDIO_FLAG_IS_CLOCK_POWER_SAVE_ENABLED
-                   //| SDIO_FLAG_IS_HARDWARE_FLOW_CONTROL_ENABLED
-                   | 0,
-        .freq = 24000000UL,
-        .pin_assignment = {
-            .clock = {2, 12},    // PC12
-            .command = {3, 2},  // PD2
-            .data[0] = {2, 8}, // PC8
-            .data[1] = {2, 9}, // PC9
-            .data[2] = {2, 10},  // PC10
-            .data[3] = {2, 11}   // PC11
-        }}};
-
+    .attr = {.o_flags = SDIO_FLAG_SET_INTERFACE | SDIO_FLAG_IS_BUS_WIDTH_4 |
+                        SDIO_FLAG_IS_CLOCK_RISING |
+                        SDIO_FLAG_IS_CLOCK_POWER_SAVE_ENABLED
+                        //| SDIO_FLAG_IS_HARDWARE_FLOW_CONTROL_ENABLED
+                        | 0,
+             .freq = 24000000UL,
+             .pin_assignment = {
+                 .clock = {2, 12},   // PC12
+                 .command = {3, 2},  // PD2
+                 .data[0] = {2, 8},  // PC8
+                 .data[1] = {2, 9},  // PC9
+                 .data[2] = {2, 10}, // PC10
+                 .data[3] = {2, 11}  // PC11
+             }}};
 
 u8 drive_sdio_dma_read_buffer[4096];
 drive_sdio_state_t drive_sdio_state MCU_SYS_MEM;
 const drive_sdio_config_t drive_sdio_config = {
     .dma_read_buffer = drive_sdio_dma_read_buffer,
     .dma_read_buffer_size = sizeof(drive_sdio_dma_read_buffer),
-    .device = DEVFS_DEVICE(
-        "sdio",
-        mcu_sdio_dma,
-        0,
-        &sdio_config,
-        &sdio_state,
-        0666,
-        SYSFS_ROOT,
-        S_IFBLK)};
-
-#endif
-
-// Coming Soon
-// SD Card as DMA
-// I2S2
-// I2S3
-// SAI1A/B
-
-FIFO_DECLARE_CONFIG_STATE(stdio_in, CONFIG_STDIO_BUFFER_SIZE);
-FIFO_DECLARE_CONFIG_STATE(stdio_out, CONFIG_STDIO_BUFFER_SIZE);
+    .device = DEVFS_DEVICE("sdio", mcu_sdio_dma, 0, &sdio_config, &sdio_state,
+                           0666, SYSFS_ROOT, S_IFBLK)};
 
 pio_state_t pio_state[8] MCU_SYS_MEM;
 const pio_config_t pio_config[8] = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}};
@@ -367,19 +314,61 @@ const tmr_config_t tmr3_config = {
                                 .channel[2] = {0xff, 0xff},
                                 .channel[3] = {0xff, 0xff}}}};
 
+#else
+
+auth_flash_state_t auth_flash_state MCU_SYS_MEM;
+const auth_flash_config_t auth_flash_config = {
+    .os_start = __KERNEL_START_ADDRESS,
+    .os_start_size = 32,
+    .os_size = 512 * 1024UL,
+    .device = DEVFS_BLOCK_DEVICE("flash0", mcu_flash, 0, 0, 0600,
+                                 SYSFS_ROOT, 128 * 1024 * 8UL)
+};
+
+#endif
+
+#define USB_DEVICE_FIFO_BUFFER_SIZE 64
+char usb_device_fifo_buffer[USB_DEVICE_FIFO_BUFFER_SIZE] MCU_SYS_MEM;
+u8 usb_device_fifo_read_buffer[USB_DEVICE_FIFO_BUFFER_SIZE] MCU_SYS_MEM;
+device_fifo_state_t usb_device_fifo_state MCU_SYS_MEM;
+usb_state_t usb_device_state MCU_SYS_MEM;
+const usb_config_t usb_device_config = {.port = 0,
+                                        .attr = {.pin_assignment = {
+                                                     .dm = {0xff, 0xff},
+                                                     .dp = {0xff, 0xff},
+                                                     .id = {0xff, 0xff},
+                                                     .vbus = {0xff, 0xff},
+                                                 }}};
+
+const device_fifo_config_t usb_device_fifo_config = {
+    .device = DEVFS_DEVICE("usb", mcu_usb, 0, &usb_device_config,
+                           &usb_device_state, 0666, SYSFS_ROOT, S_IFCHR),
+    .read_location = SOS_LINK_TRANSPORT_USB_BULK_ENDPOINT,
+    .write_location = SOS_LINK_TRANSPORT_USB_BULK_ENDPOINT | 0x80,
+    .fifo =
+        {
+            .buffer = usb_device_fifo_buffer,
+            .size = USB_DEVICE_FIFO_BUFFER_SIZE,
+        },
+    .read_buffer = usb_device_fifo_read_buffer,
+    .read_buffer_size = USB_DEVICE_FIFO_BUFFER_SIZE,
+};
+
+FIFO_DECLARE_CONFIG_STATE(stdio_in, CONFIG_STDIO_BUFFER_SIZE);
+FIFO_DECLARE_CONFIG_STATE(stdio_out, CONFIG_STDIO_BUFFER_SIZE);
+
 /* This is the list of devices that will show up in the /dev folder.
  */
 const devfs_device_t devfs_list[] = {
-// System devices
+    // System devices
     DEVFS_DEVICE("trace", ffifo, 0, &debug_trace_config, &debug_trace_state,
                  0666, SYSFS_ROOT, S_IFCHR),
     DEVFS_DEVICE("stdio-out", fifo, 0, &stdio_out_config, &stdio_out_state,
                  0666, SYSFS_ROOT, S_IFCHR),
     DEVFS_DEVICE("stdio-in", fifo, 0, &stdio_in_config, &stdio_in_state, 0666,
                  SYSFS_ROOT, S_IFCHR),
-    DEVFS_DEVICE("link-phy-usb", device_fifo, SOS_BOARD_USB_PORT,
-                 &usb_device_fifo_config, &usb_device_fifo_state, 0666,
-                 SYSFS_ROOT, S_IFCHR),
+    DEVFS_DEVICE("link-phy-usb", device_fifo, 0, &usb_device_fifo_config,
+                 &usb_device_fifo_state, 0666, SYSFS_ROOT, S_IFCHR),
     DEVFS_DEVICE("sys", sys, 0, 0, 0, 0666, SYSFS_ROOT, S_IFCHR),
     DEVFS_DEVICE("auth", auth, 0, 0, 0, 0666, SYSFS_ROOT, S_IFCHR),
     // DEVFS_DEVICE("rtc", mcu_rtc, 0, 0, 0, 0666, SYSFS_ROOT, S_IFCHR),
@@ -387,14 +376,8 @@ const devfs_device_t devfs_list[] = {
     DEVFS_DEVICE("core", mcu_core, 0, 0, 0, 0666, SYSFS_ROOT, S_IFCHR),
 
 #if !_IS_BOOT
-    DEVFS_BLOCK_DEVICE("drive0", drive_sdio, &drive_sdio_config, &drive_sdio_state, 0666,
-                       SYSFS_ROOT, 0xffffffff),
-#endif
-
-#if INCLUDE_ETHERNET
-    DEVFS_DEVICE("eth0", netif_lan8742a, 0, &eth0_config, &netif_lan8742a_state,
-                 0666, SYSFS_ROOT, S_IFCHR),
-#endif
+    DEVFS_BLOCK_DEVICE("drive0", drive_sdio, &drive_sdio_config,
+                       &drive_sdio_state, 0666, SYSFS_ROOT, 0xffffffff),
 
     DEVFS_DEVICE("i2c3", mcu_i2c, 3, &i2c3_config, &i2c3_state, 0666,
                  SYSFS_ROOT, S_IFCHR),
@@ -424,6 +407,11 @@ const devfs_device_t devfs_list[] = {
                  SYSFS_ROOT,
                  S_IFCHR), // GPIOH
 
+#if INCLUDE_ETHERNET
+    DEVFS_DEVICE("eth0", netif_lan8742a, 0, &eth0_config, &netif_lan8742a_state,
+                 0666, SYSFS_ROOT, S_IFCHR),
+#endif
+
     DEVFS_DEVICE("spi0", mcu_spi, 0, &spi0_dma_config, &spi0_state, 0666,
                  SYSFS_ROOT, S_IFCHR),
     DEVFS_DEVICE("spi2", mcu_spi, 0, &spi2_dma_config, &spi2_state, 0666,
@@ -438,5 +426,10 @@ const devfs_device_t devfs_list[] = {
     // TIM4
     DEVFS_DEVICE("tmr3", mcu_tmr, 3, &tmr3_config, &tmr3_state, 0666,
                  SYSFS_ROOT, S_IFCHR),
+#else
+
+    DEVFS_BLOCK_DEVICE("auth_flash", auth_flash, &auth_flash_config, &auth_flash_state, 0600, SYSFS_ROOT,
+                       128 * 1024 * 4UL),
+#endif
 
     DEVFS_TERMINATOR};

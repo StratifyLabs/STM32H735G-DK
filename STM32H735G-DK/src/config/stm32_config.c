@@ -38,25 +38,3 @@ const stm32_config_t stm32_config = {
             .tx_fifo_word_size[5] = SOS_BOARD_TX5_FIFO_WORDS  // TX endpoint 5
         }
 };
-#if 0
-MCU_DECLARE_SECRET_KEY_32(secret_key)
-
-const mcu_board_config_t mcu_board_config = {
-    .core_cpu_freq = SOS_BOARD_SYSTEM_CLOCK,
-    .usb_max_packet_zero = 64,
-    .debug_uart_port = 2,
-    .debug_uart_attr = {.pin_assignment = {.rx = {3, 9},
-                                           .tx = {3, 8},
-                                           .cts = {0xff, 0xff},
-                                           .rts = {0xff, 0xff}},
-                        .freq = 115200,
-                        .o_flags = UART_FLAG_SET_LINE_CODING_DEFAULT,
-                        .width = 8},
-    .secret_key_address = secret_key,
-    .secret_key_size = 32,
-    .o_flags = MCU_BOARD_CONFIG_FLAG_LED_ACTIVE_HIGH,
-    .event_handler = SOS_BOARD_EVENT_HANDLER,
-    .led = {1, 7},
-    .arch_config = &stm32_config,
-    .o_mcu_debug = SOS_BOARD_DEBUG_FLAGS};
-#endif

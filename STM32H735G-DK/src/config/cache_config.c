@@ -2,9 +2,7 @@
 
 #include "config.h"
 
-#if defined STM32F7 || defined STM32H7
 #define USE_CACHE 1
-#endif
 
 void cache_enable() {
 #if USE_CACHE

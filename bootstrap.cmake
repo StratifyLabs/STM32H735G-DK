@@ -8,11 +8,11 @@ set(DEPENDENCIES_DIRECTORY ${SDK_DIRECTORY}/dependencies)
 
 
 if(NOT EXISTS ${DEPENDENCIES_DIRECTORY}/CMakeSDK/CMakeLists.txt)
-file(MAKE_DIRECTORY ${DEPENDENCIES_DIRECTORY})
-execute_process(
-	COMMAND git clone --branch main https://github.com/StratifyLabs/CMakeSDK.git
-	WORKING_DIRECTORY ${DEPENDENCIES_DIRECTORY}
-	)
+	file(MAKE_DIRECTORY ${DEPENDENCIES_DIRECTORY})
+	execute_process(
+		COMMAND git clone --branch main https://github.com/StratifyLabs/CMakeSDK.git
+		WORKING_DIRECTORY ${DEPENDENCIES_DIRECTORY}
+		)
 endif()
 
 execute_process(

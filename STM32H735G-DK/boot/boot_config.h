@@ -5,6 +5,7 @@
 
 void boot_event_handler(int event, void *args);
 int boot_is_bootloader_requested();
+void boot_invoke_bootloader(void * args);
 int boot_flash_erase_page(const devfs_handle_t *handle, void *ctl);
 int boot_flash_write_page(const devfs_handle_t *handle, void *ctl);
 

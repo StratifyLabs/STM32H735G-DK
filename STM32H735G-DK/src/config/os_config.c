@@ -11,6 +11,10 @@
 
 #include <device/device_fifo.h>
 
+#if _IS_BOOT
+#include "../boot/boot_config.h"
+#endif
+
 #include "config.h"
 #include "lvgl_config.h"
 #include "os_config.h"
@@ -29,9 +33,25 @@ void svcall_flush_video_memory(void *args) {
                                     CONFIG_VIDEO_MEMORY_SIZE);
 }
 
+#if _IS_BOOT
+static void *stack_ptr;
+static void (*app_reset)();
+#endif
+
 void os_event_handler(int event, void *args) {
   switch (event) {
   case SOS_EVENT_ROOT_RESET:
+#if _IS_BOOT
+    stack_ptr = (void *)(((u32 *)sos_config.boot.program_start_address)[0]);
+    app_reset =
+        (void (*)())((((u32 *)sos_config.boot.program_start_address)[1]));
+    if (boot_is_bootloader_requested() == 0) {
+      // execute the reset vector
+      if ((u32)stack_ptr != 0xffffffff && (u32)app_reset != 0xffffffff) {
+        app_reset();
+      }
+    }
+#endif
 
     break;
 
@@ -87,7 +107,14 @@ void os_event_handler(int event, void *args) {
 #endif
 
     sos_debug_log_info(SOS_DEBUG_USER0, "Start LED %d");
+#if _IS_BOOT
+    sos_led_boot_startup();
+    sos_debug_printf("OS reset vector: %p == %p\n",
+                     sos_config.boot.program_start_address,
+                     app_reset);
+#else
     sos_led_startup();
+#endif
     sos_debug_log_info(SOS_DEBUG_USER0, "Start Link");
     break;
   }

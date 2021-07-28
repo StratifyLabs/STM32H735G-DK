@@ -9,6 +9,8 @@
 #include "boot_link_config.h"
 #include "config.h"
 
+#if 0
+
 usb_state_t usb_device_state MCU_SYS_MEM;
 const usb_config_t usb_device_config = {.port = 0, .attr = {}};
 const devfs_handle_t usb_handle = {
@@ -50,3 +52,5 @@ link_transport_phy_t link_transport_open(const char *name,
 
   return fd;
 }
+
+#endif

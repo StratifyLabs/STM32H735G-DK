@@ -4,6 +4,9 @@
 
 #if _IS_BOOT == 0
 #include <lvgl_api.h>
+#else
+#include <micro_ecc_api.h>
+#include <tinycrypt_api.h>
 #endif
 
 #include "stm32/stm32h735g-dk.h"
@@ -45,14 +48,22 @@ const void *sys_kernel_request_api(u32 request) {
   case CRYPT_SHA256_API_REQUEST:
     return &mbedtls_crypt_sha256_api;
 #endif
-#if INCLUDE_ETHERNET && INCLUDE_TLS
+#if INCLUDE_ETHERNET && INCLUDE_TLS && !_IS_BOOT
   case MBEDTLS_API_REQUEST:
     return &mbedtls_api; // about 200KB
 #endif
-#if INCLUDE_JANSSON_API
+#if INCLUDE_JANSSON_API && !_IS_BOOT
   case JANSSON_API_REQUEST:
     return &jansson_api; // about 20KB
 #endif
+
+#if _IS_BOOT
+  case CRYPT_ECC_ROOT_API_REQUEST:
+    return &micro_ecc_root_api;
+  case CRYPT_SHA256_ROOT_API_REQUEST:
+    return &tinycrypt_sha256_root_api;
+#endif
+
   }
   return 0;
 }

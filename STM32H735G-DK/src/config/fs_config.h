@@ -9,4 +9,10 @@
 
 extern const sysfs_t sysfs_list[];
 
+#if _IS_BOOT
+#define DEVFS_OFFSET 0
+#else
+#define DEVFS_OFFSET 1
+#endif
+
 #endif // CONFIG_FS_CONFIG_H

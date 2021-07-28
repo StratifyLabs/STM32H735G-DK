@@ -17,7 +17,7 @@
 #define FLASH_START (0x08000000 + 128 * 1024UL)
 #define RAM_START (0x24000000 + CONFIG_SYSTEM_MEMORY_SIZE)
 
-#define DEVFS_OFFSET 1
+#if _IS_BOOT == 0
 
 // Application Filesystem ------------------------------------------
 static u32 ram_usage_table[APPFS_RAM_USAGE_WORDS(
@@ -81,6 +81,8 @@ const fatfs_config_t fatfs_configuration = {
     .wait_busy_timeout_count = 10000,
     .vol_id = 0};
 
+#endif
+
 // Root Filesystem---------------------------------------------------
 
 /*
@@ -94,11 +96,16 @@ const fatfs_config_t fatfs_configuration = {
  *
  */
 
+
 const sysfs_t sysfs_list[] = {
     // managing applications
+#if _IS_BOOT == 0
     APPFS_MOUNT("/app", &mem0, 0777, SYSFS_ROOT),
+#endif
     // the list of devices
     DEVFS_MOUNT("/dev", devfs_list, 0777, SYSFS_ROOT),
+#if _IS_BOOT == 0
     FATFS_MOUNT("/home", &fatfs_configuration, 0777, SYSFS_ROOT),
+#endif
     // root mount
     SYSFS_MOUNT("/", sysfs_list, 0777, SYSFS_ROOT), SYSFS_TERMINATOR};
