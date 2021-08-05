@@ -59,7 +59,7 @@ sdk_add_subdirectory(HalAPI v1.0 ON)
 sdk_add_subdirectory(SosAPI main ON)
 sdk_add_subdirectory(JsonAPI v1.0 ON)
 sdk_add_subdirectory(CryptoAPI main ON)
-sdk_add_subdirectory(InetAPI v1.0 ON)
+sdk_add_subdirectory(InetAPI main ON)
 sdk_add_subdirectory(CloudAPI v1.0 ON)
 sdk_add_subdirectory(LvglAPI main ON)
 
