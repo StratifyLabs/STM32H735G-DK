@@ -41,6 +41,18 @@
 		},
 		{
 			"path": "dependencies/StratifyOS-newlib"
+		},
+		{
+			"path": "../apps/Blinky"
+		},
+		{
+			"path": "../apps/HelloWorld"
+		},
+		{
+			"path": "../apps/SystemApps"
+		},
+		{
+			"path": "../apps/testsuite"
 		}
 	]
 }
