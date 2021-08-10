@@ -22,6 +22,9 @@
 
 #include "stm32/stm32h735g_discovery_lcd.h"
 
+#define OS_CONFIG_VIDEO_MEMORY_MPU_REGION 0
+#define OS_CONFIG_APP_MEMORY_MPU_REGION 1
+
 void svcall_flush_video_memory(void *args) {
   CORTEXM_SVCALL_ENTER();
   MCU_UNUSED_ARGUMENT(args);
@@ -72,7 +75,7 @@ void os_event_handler(int event, void *args) {
   case SOS_EVENT_ROOT_MPU_INITIALIZED:
 
     // Allow full access to video memory
-    mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION - 1,
+    mpu_enable_region(OS_CONFIG_VIDEO_MEMORY_MPU_REGION,
                       (void *)CONFIG_VIDEO_MEMORY_ADDRESS,
                       CONFIG_VIDEO_MEMORY_SIZE, MPU_ACCESS_PRW_URW,
                       MPU_MEMORY_EXTERNAL_SRAM,
@@ -81,7 +84,7 @@ void os_event_handler(int event, void *args) {
 
     // background access to app region -- allows caching for general access by
     // appfs
-    mpu_enable_region(TASK_APPLICATION_DATA_USER_REGION,
+    mpu_enable_region(OS_CONFIG_APP_MEMORY_MPU_REGION,
                       (void *)CONFIG_APP_MEMORY_ADDRESS, CONFIG_APP_MEMORY_SIZE,
                       MPU_ACCESS_PRW_UR, MPU_MEMORY_EXTERNAL_SRAM,
                       0 // executable

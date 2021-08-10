@@ -23,6 +23,11 @@ include(CTest)
 set(SOS_ARCH v7em_f5dh)
 set(SOS_ARCH_LIST "")
 
+set(SOS_SDK_PULL_TARGET pull)
+add_custom_target(pull
+	COMMAND git pull
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
 set(API_IS_SDK ON CACHE INTERNAL "Use to prevent include of modules")
 
 add_subdirectory(SDK SDK)

@@ -1,11 +1,6 @@
 
 
 #include <cortexm/mpu.h>
-#include <device/cfifo.h>
-#include <device/fifo.h>
-#include <device/sys.h>
-#include <device/uartfifo.h>
-#include <device/usbfifo.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <mcu/mcu.h>
@@ -110,6 +105,7 @@ const sos_config_t sos_config MCU_ALIGN(8) = {
 
     .mcu = {.interrupt_request_total = MCU_LAST_IRQ + 1,
             .interrupt_middle_priority = MCU_MIDDLE_IRQ_PRIORITY,
+
             .set_interrupt_priority = mcu_set_interrupt_priority,
             .reset_watchdog_timer = mcu_reset_watchdog_timer,
             .set_pin_function = mcu_set_pin_function},

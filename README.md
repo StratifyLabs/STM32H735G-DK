@@ -24,8 +24,27 @@ cd ..
 sl os.pack:name=STM32H735G-DK-SDK
 ```
 
-The above will create a file called `SDK/STM32H735G-DK-SDK.<bin|exe>`. Add this file to your Github release add this file to your github release.
+The above will create a file called `SDK/STM32H735G-DK-SDK.<bin|exe>`. Add this file to your Github release to allow users to download the SDK.
 
+
+
+## Withouth Kernel Signing
+
+Install the bootloader without key signing:
+
+> This uses `/Volumes/DIS_H735IG` which is the MacOS path to the mbed drive. Please adjust accordingly for Windows and Linux.
+
+```
+sl os.install:path=STM32H735G-DK,build=boot_debug,dest=host@/Volumes/DIS_H735IG
+```
+
+
+```
+sl os.install:build=debug,flashpath=/dev/auth_flash
+```
+
+
+## Require Kernel to be Signed
 
 Install the bootloader with key signing:
 
