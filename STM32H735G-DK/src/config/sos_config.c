@@ -65,7 +65,7 @@ const sos_config_t sos_config MCU_ALIGN(8) = {
               .set_channel = clock_set_channel,
               .get_channel = clock_get_channel,
               .microseconds = clock_microseconds,
-              .nanoseconds = NULL},
+              .nanoseconds = clock_nanoseconds},
 
     .task = {.start_stack_size = 2048,
              .start = sos_default_thread,
@@ -132,7 +132,10 @@ const sos_config_t sos_config MCU_ALIGN(8) = {
             .pio_set_attributes = sys_pio_set_attributes,
             .core_clock_frequency = CONFIG_SYSTEM_CLOCK,
             .kernel_request = sys_kernel_request,
-            .kernel_request_api = sys_kernel_request_api
+            .kernel_request_api = sys_kernel_request_api,
+#if !_IS_BOOT
+            .get_public_key = sys_get_public_key
+#endif
     },
 
     .debug = {.initialize = debug_initialize,

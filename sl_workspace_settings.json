@@ -1,4 +1,16 @@
 {
    "sdkDirectory": "SDK",
-   "creationTimestamp": 1626128653
+   "creationTimestamp": 1626128653,
+   "switches": {
+      "prepareBootloader": [
+         "fs.mkdir:path=host@tmp",
+         "os.install:path=STM32H735G-DK,build=boot_debug,dest=host@tmp,key,rekey,publickey=RhnmvxQ8D4tlh02L8693"
+      ],
+      "installDebugOs": [
+         "os.install:path=STM32H735G-DK,build=debug,signkey=RhnmvxQ8D4tlh02L8693,flashdevice=/dev/auth_flash"
+      ],
+      "installOs": [
+         "os.install:path=STM32H735G-DK,build=release,signkey=RhnmvxQ8D4tlh02L8693"
+      ]
+   }
 }

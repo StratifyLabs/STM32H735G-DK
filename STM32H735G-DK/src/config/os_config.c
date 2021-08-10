@@ -58,6 +58,7 @@ void os_event_handler(int event, void *args) {
 
     break;
 
+  case SOS_EVENT_FATAL:
   case SOS_EVENT_ROOT_FATAL:
     // start the bootloader on a fatal event
     // mcu_core_invokebootloader(0, 0);
@@ -112,9 +113,6 @@ void os_event_handler(int event, void *args) {
     sos_debug_log_info(SOS_DEBUG_USER0, "Start LED %d");
 #if _IS_BOOT
     sos_led_boot_startup();
-    sos_debug_printf("OS reset vector: %p == %p\n",
-                     sos_config.boot.program_start_address,
-                     app_reset);
 #else
     sos_led_startup();
 #endif

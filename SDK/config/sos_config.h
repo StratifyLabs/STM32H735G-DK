@@ -28,9 +28,9 @@
 #define CONFIG_MALLOC_SBRK_JUMP_SIZE 128
 
 // require a valid digital signature when installing applications
-#define CONFIG_APPFS_IS_VERIFY_SIGNATURE 0
+#define CONFIG_APPFS_IS_VERIFY_SIGNATURE 1
 // require the OS to be digitally signed
-#define CONFIG_BOOT_IS_VERIFY_SIGNATURE 0
+#define CONFIG_BOOT_IS_VERIFY_SIGNATURE 1
 
 // Bootloader provides AES cryptography using a device unique secret key
 #define CONFIG_BOOT_IS_AES_CRYPTO 1
