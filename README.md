@@ -32,28 +32,26 @@ The above will create a file called `SDK/STM32H735G-DK-SDK.<bin|exe>`. Add this 
 
 Install the bootloader without key signing:
 
+```bash
+sl --prepareBootloader
+```
+
+Then copy the output binary to the mbed drive.
+
 > This uses `/Volumes/DIS_H735IG` which is the MacOS path to the mbed drive. Please adjust accordingly for Windows and Linux.
 
-```
-sl os.install:path=STM32H735G-DK,build=boot_debug,dest=host@/Volumes/DIS_H735IG
-```
-
-
-```
-sl os.install:build=debug,flashpath=/dev/auth_flash
+```bash
+cp tmp/STM32H735G-DK_build_boot_debug.bin /Volumes/DIS_H735IG
 ```
 
+Then install the OS using:
 
-## Require Kernel to be Signed
-
-Install the bootloader with key signing:
-
-```
-sl os.install:path=STM32H735G-DK,publickey=162ZEPiD33bF1T8diV0t,build=boot_debug,dest=host@/Volumes/DIS_H735IG,key,rekey
+```bash
+sl --installDebugOs
 ```
 
-Install the OS in flash:
+You can then run the sample `FileBrowser` application using:
 
-```
-sl os.install:build=debug,signkey=162ZEPiD33bF1T8diV0t,signkeypassword=4AC673981E969BBC9C33933800960A7F57EC0F9036CAABB2E1CF09402E9B391E,flashpath=/dev/auth_flash
+```bash
+sl --runFileBrowser
 ```

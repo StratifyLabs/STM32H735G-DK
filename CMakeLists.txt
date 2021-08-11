@@ -33,3 +33,13 @@ set(API_IS_SDK ON CACHE INTERNAL "Use to prevent include of modules")
 add_subdirectory(SDK SDK)
 add_subdirectory(STM32H735G-DK)
 add_subdirectory(apps)
+
+add_custom_target(publish_header
+	COMMAND sl os.publish:header,path=STM32H735G-DK
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	)
+
+add_custom_target(publish
+	COMMAND sl os.publish:path=STM32H735G-DK,signkey=RhnmvxQ8D4tlh02L8693
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	)
