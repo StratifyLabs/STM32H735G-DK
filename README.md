@@ -1,5 +1,11 @@
 # STM32H735G-DK
 
+## Get Started Quickly
+
+You can quickly and easily install pre-built binaries using our [Getting Started Guide](https://docs.stratifylabs.dev/docs/stratify-os/getting-started/hardware/stm32h750b-dk).
+
+## Clone, Build and Install
+
 This project lets you build and run Stratify OS on the STM32H735G-DK.
 
 To build:
@@ -28,7 +34,7 @@ The above will create a file called `SDK/STM32H735G-DK-SDK.<bin|exe>`. Add this 
 
 
 
-## Withouth Kernel Signing
+## Install the Bootloader and OS
 
 Install the bootloader without key signing:
 
@@ -49,6 +55,8 @@ Then install the OS using:
 ```bash
 sl --installDebugOs
 ```
+
+## Run the FileBrowser
 
 You can then run the sample `FileBrowser` application using:
 
