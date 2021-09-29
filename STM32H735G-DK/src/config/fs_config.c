@@ -21,7 +21,8 @@
 
 // Application Filesystem ------------------------------------------
 static u32 ram_usage_table[APPFS_RAM_USAGE_WORDS(
-    RAM_PAGES * USE_INTERNAL_RAM + EXTERNAL_RAM_PAGES * USE_EXTERNAL_RAM)] MCU_SYS_MEM;
+    RAM_PAGES * USE_INTERNAL_RAM +
+    EXTERNAL_RAM_PAGES * USE_EXTERNAL_RAM)] MCU_SYS_MEM;
 
 // flash doesn't need config or state
 static const devfs_device_t flash0 =
@@ -33,12 +34,12 @@ const appfs_mem_config_t appfs_mem_config = {
     .usage = ram_usage_table,
     .flash_driver = &flash0,
     .sections = {{.o_flags = MEM_FLAG_IS_FLASH,
-                  .page_count = 3,
+                  .page_count = 1,
                   .page_size = 128 * 1024UL,
                   .address = FLASH_START}
 #if USE_INTERNAL_RAM
                  ,
-                 //internal RAM
+                 // internal RAM
                  {.o_flags = MEM_FLAG_IS_RAM,
                   .page_count = RAM_PAGES,
                   .page_size = MCU_RAM_PAGE_SIZE,
@@ -96,9 +97,8 @@ const fatfs_config_t fatfs_configuration = {
  *
  */
 
-
 const sysfs_t sysfs_list[] = {
-    // managing applications
+// managing applications
 #if _IS_BOOT == 0
     APPFS_MOUNT("/app", &mem0, 0777, SYSFS_ROOT),
 #endif

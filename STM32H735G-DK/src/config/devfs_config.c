@@ -320,7 +320,7 @@ auth_flash_state_t auth_flash_state MCU_SYS_MEM;
 const auth_flash_config_t auth_flash_config = {
     .os_start = __KERNEL_START_ADDRESS,
     .os_start_size = 32,
-    .os_size = 512 * 1024UL,
+    .os_size = 768 * 1024UL,
     .device = DEVFS_BLOCK_DEVICE("flash0", mcu_flash, 0, 0, 0600,
                                  SYSFS_ROOT, 128 * 1024 * 8UL)
 };

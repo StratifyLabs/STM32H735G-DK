@@ -14,8 +14,16 @@
 
 #define SCREEN_MEM_SIZE (LCD_DEFAULT_WIDTH * LCD_DEFAULT_HEIGHT * 4)
 
+static void *reload_address = NULL;
+static lv_disp_drv_t *reload_disp_drv = NULL;
+extern LTDC_HandleTypeDef hlcd_ltdc;
+
+void mcu_core_ltdc_isr(){
+  HAL_LTDC_IRQHandler(&hlcd_ltdc);
+}
+
 /*Static or global buffer(s). The second buffer is optional*/
-static void svcall_init_hardware(void * args){
+static void svcall_init_hardware(void *args) {
   CORTEXM_SVCALL_ENTER();
   MCU_UNUSED_ARGUMENT(args);
 
@@ -23,13 +31,15 @@ static void svcall_init_hardware(void * args){
                  LCD_PIXEL_FORMAT_ARGB8888, LCD_DEFAULT_WIDTH,
                  LCD_DEFAULT_HEIGHT);
 
-
   TS_Init_t hTS = {};
   hTS.Orientation = TS_SWAP_XY;
   hTS.Accuracy = 0;
   hTS.Width = LCD_DEFAULT_WIDTH;
   hTS.Height = LCD_DEFAULT_HEIGHT;
   BSP_TS_Init(0, &hTS);
+
+  //HAL_LTDC_ProgramLineEvent(&hlcd_ltdc, 272);
+  //cortexm_enable_irq(LTDC_IRQn);
 }
 
 static void root_set_video_memory(void *address) {
@@ -37,15 +47,13 @@ static void root_set_video_memory(void *address) {
   sos_config.cache.clean_data_block(address, SCREEN_MEM_SIZE);
 
   BSP_LCD_LayerConfig_t config = {};
-  config.X0 = 0;
-  config.Y0 = 0;
-
   config.X1 = LCD_DEFAULT_WIDTH;
   config.Y1 = LCD_DEFAULT_HEIGHT;
   config.PixelFormat = LCD_PIXEL_FORMAT_ARGB8888;
   config.Address = (u32)address;
   BSP_LCD_ConfigLayer(0, 0, &config);
 }
+
 
 
 static void svcall_flush(void *args) {
@@ -57,6 +65,7 @@ static void svcall_flush(void *args) {
 static void flush_callback(lv_disp_drv_t *disp_drv, const lv_area_t *area,
                            lv_color_t *color_p) {
   MCU_UNUSED_ARGUMENT(area);
+  reload_disp_drv = disp_drv;
   cortexm_svcall(svcall_flush, color_p);
 
   /* IMPORTANT!!!
@@ -80,18 +89,14 @@ static void clean_cache_callback(lv_disp_drv_t *disp_drv, u32 address) {
   MCU_UNUSED_ARGUMENT(address);
 }
 
-
-
-static void svcall_touch_read(void * args){
-  BSP_TS_GetState(0, args);
-}
+static void svcall_touch_read(void *args) { BSP_TS_GetState(0, args); }
 
 static void touch_read_callback(lv_indev_drv_t *drv, lv_indev_data_t *data) {
   MCU_UNUSED_ARGUMENT(drv);
   TS_State_t state;
   cortexm_svcall(svcall_touch_read, &state);
 
-  if(state.TouchDetected) {
+  if (state.TouchDetected) {
     data->point.x = state.TouchX * 480 / 287;
     data->point.y = state.TouchY * 272 / 153;
     data->state = LV_INDEV_STATE_PRESSED;
@@ -131,16 +136,64 @@ void lvgl_config_start() {
   indev_drv.read_cb = touch_read_callback; /*See below.*/
   /*Register the driver in LVGL and save the created input device object*/
   lv_indev_drv_register(&indev_drv);
-
 }
 
-void lvgl_config_initialize_display(){
+void lvgl_config_initialize_display() {
   cortexm_svcall(svcall_init_hardware, NULL);
-  //Clear the display
-  memset((void *)LCD_LAYER_0_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
-  memset((void *)LCD_LAYER_1_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE/2);
-  cortexm_svcall(svcall_flush, (void*)LCD_LAYER_1_ADDRESS);
+  // Clear the display
+  memset((void *)LCD_LAYER_0_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE / 2);
+  memset((void *)LCD_LAYER_1_ADDRESS, 0xff, CONFIG_VIDEO_MEMORY_SIZE / 2);
+  cortexm_svcall(svcall_flush, (void *)LCD_LAYER_1_ADDRESS);
+}
 
+extern const lv_font_t montserrat_r_16;
+extern const lv_font_t montserrat_r_20;
+extern const lv_font_t montserrat_r_24;
+extern const lv_font_t montserrat_r_28;
+extern const lv_font_t montserrat_r_44;
+extern const lv_font_t montserrat_r_56;
+extern const lv_font_t montserrat_r_72;
+
+extern const lv_font_t montserrat_l_16;
+extern const lv_font_t montserrat_l_20;
+extern const lv_font_t montserrat_l_24;
+extern const lv_font_t montserrat_l_28;
+
+extern const lv_font_t montserrat_sb_20;
+extern const lv_font_t montserrat_sb_24;
+extern const lv_font_t montserrat_sb_28;
+extern const lv_font_t montserrat_sb_44;
+extern const lv_font_t montserrat_sb_56;
+extern const lv_font_t montserrat_sb_72;
+
+extern const lv_font_t sourcecode_r_8;
+extern const lv_font_t sourcecode_r_12;
+extern const lv_font_t sourcecode_r_16;
+extern const lv_font_t sourcecode_r_20;
+extern const lv_font_t sourcecode_r_24;
+extern const lv_font_t sourcecode_r_28;
+
+static const lvgl_api_font_descriptor_t font_descriptors[] = {
+    {"montserrat-r-24", &montserrat_r_16},
+    {"montserrat-r-24", &montserrat_r_24},
+    {"montserrat-l-24", &montserrat_l_24},
+    {"montserrat-sb-28", &montserrat_sb_28},
+    {"montserrat-sb-44", &montserrat_sb_44},
+    {"sourcecode-r-16", &sourcecode_r_16},
+    {"sourcecode-r-24", &sourcecode_r_24},
+};
+
+int lvgl_get_font(void *args) {
+  lvgl_api_font_request_t *request = args;
+  if (request->offset <
+      sizeof(font_descriptors) / sizeof(lvgl_api_font_descriptor_t)) {
+    request->descriptor = font_descriptors + request->offset;
+    return 0;
+  }
+
+  request->descriptor = NULL;
+  errno = EINVAL;
+  return -1;
 }
 
 #endif

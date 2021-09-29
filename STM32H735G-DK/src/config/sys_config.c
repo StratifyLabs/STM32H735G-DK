@@ -54,6 +54,9 @@ int sys_kernel_request(int request, void *arg) {
     lvgl_config_start();
     return 0;
   }
+  if( request == LVGL_REQUEST_GET_FONT ){
+    return lvgl_get_font(arg);
+  }
 #else
   MCU_UNUSED_ARGUMENT(request);
 #endif

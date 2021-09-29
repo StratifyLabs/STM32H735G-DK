@@ -33,6 +33,7 @@ set(API_IS_SDK ON CACHE INTERNAL "Use to prevent include of modules")
 add_subdirectory(SDK SDK)
 add_subdirectory(STM32H735G-DK)
 add_subdirectory(apps)
+add_subdirectory(fonts)
 
 add_custom_target(publish_header
 	COMMAND sl os.publish:header,path=STM32H735G-DK

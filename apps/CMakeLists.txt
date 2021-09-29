@@ -26,4 +26,6 @@ if(APPS_IS_TESTSUITE)
 endif()
 
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../LiveCubeFW/Controller Controller)
+
 
