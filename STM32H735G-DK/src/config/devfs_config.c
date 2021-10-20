@@ -136,7 +136,7 @@ stm32_uart_dma_config_t uart1_dma_config = {
 
 // I2C4 -- connects to display
 i2c_state_t i2c3_state MCU_SYS_MEM;
-const i2c_config_t i2c3_config = {.port = 0,
+const i2c_config_t i2c3_config = {.port = 3,
                                   .attr = {.o_flags = I2C_FLAG_SET_MASTER,
                                            .freq = 100000,
                                            .pin_assignment = {
@@ -321,9 +321,8 @@ const auth_flash_config_t auth_flash_config = {
     .os_start = __KERNEL_START_ADDRESS,
     .os_start_size = 32,
     .os_size = 768 * 1024UL,
-    .device = DEVFS_BLOCK_DEVICE("flash0", mcu_flash, 0, 0, 0600,
-                                 SYSFS_ROOT, 128 * 1024 * 8UL)
-};
+    .device = DEVFS_BLOCK_DEVICE("flash0", mcu_flash, 0, 0, 0600, SYSFS_ROOT,
+                                 128 * 1024 * 8UL)};
 
 #endif
 
@@ -379,8 +378,8 @@ const devfs_device_t devfs_list[] = {
     DEVFS_BLOCK_DEVICE("drive0", drive_sdio, &drive_sdio_config,
                        &drive_sdio_state, 0666, SYSFS_ROOT, 0xffffffff),
 
-    DEVFS_DEVICE("i2c3", mcu_i2c, 3, &i2c3_config, &i2c3_state, 0666,
-                 SYSFS_ROOT, S_IFCHR),
+    DEVFS_CHAR_DEVICE("i2c3", mcu_i2c, &i2c3_config, &i2c3_state, 0666,
+                      SYSFS_ROOT),
 
     DEVFS_DEVICE("pio0", mcu_pio, 0, pio_config + 0, pio_state + 0, 0666,
                  SYSFS_ROOT,
@@ -428,8 +427,8 @@ const devfs_device_t devfs_list[] = {
                  SYSFS_ROOT, S_IFCHR),
 #else
 
-    DEVFS_BLOCK_DEVICE("auth_flash", auth_flash, &auth_flash_config, &auth_flash_state, 0600, SYSFS_ROOT,
-                       128 * 1024 * 4UL),
+    DEVFS_BLOCK_DEVICE("auth_flash", auth_flash, &auth_flash_config,
+                       &auth_flash_state, 0600, SYSFS_ROOT, 128 * 1024 * 4UL),
 #endif
 
     DEVFS_TERMINATOR};
