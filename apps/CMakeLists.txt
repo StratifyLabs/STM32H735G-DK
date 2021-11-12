@@ -26,5 +26,3 @@ if(APPS_IS_TESTSUITE)
 endif()
 
 
-
-
