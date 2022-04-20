@@ -1,0 +1,187 @@
+{
+   "source": "STM32H735G-DK/src",
+   "themes": [
+      {
+         "path": "designlab/themes/theme-dark-small.json"
+      },
+      {
+         "path": "designlab/themes/theme-light-small.json"
+      }
+   ],
+   "assets": [
+      {
+         "path": "designlab/assets/icon.png"
+      },
+      {
+         "path": "designlab/assets/icon-256x256.png"
+      }
+   ],
+   "fonts": [
+      {
+         "path": "designlab/fonts/Montserrat/Montserrat-Regular.ttf",
+         "name": "montserrat",
+         "style": "regular",
+         "range": "0x20-0x7F",
+         "bitsPerPixel": "8",
+         "userSizes": "12",
+         "icons": "true"
+      },
+      {
+         "path": "designlab/fonts/SourceCode/SourceCodePro-Regular.ttf",
+         "name": "sourcecode",
+         "style": "regular",
+         "range": "0x20-0x7F",
+         "bitsPerPixel": "8",
+         "userSizes": "12",
+         "icons": "false"
+      },
+      {
+         "path": "designlab/fonts/Montserrat/Montserrat-SemiBold.ttf",
+         "name": "montserrat",
+         "style": "semi_bold",
+         "range": "0x20-0x7F",
+         "bitsPerPixel": "8",
+         "userSizes": "12",
+         "icons": "true"
+      }
+   ],
+   "icons": {
+      "name": "icons",
+      "path": "",
+      "range": [
+         {
+            "family": "solid",
+            "name": "check",
+            "unicode": "uf00c"
+         },
+         {
+            "family": "solid",
+            "name": "chevron-down",
+            "unicode": "uf078"
+         },
+         {
+            "family": "solid",
+            "name": "chevron-left",
+            "unicode": "uf053"
+         },
+         {
+            "family": "solid",
+            "name": "chevron-right",
+            "unicode": "uf054"
+         },
+         {
+            "family": "solid",
+            "name": "chevron-up",
+            "unicode": "uf077"
+         },
+         {
+            "family": "solid",
+            "name": "cloud-download-alt",
+            "unicode": "uf381"
+         },
+         {
+            "family": "solid",
+            "name": "cloud-upload-alt",
+            "unicode": "uf382"
+         },
+         {
+            "family": "solid",
+            "name": "code",
+            "unicode": "uf121"
+         },
+         {
+            "family": "solid",
+            "name": "code-branch",
+            "unicode": "uf126"
+         },
+         {
+            "family": "solid",
+            "name": "exclamation-triangle",
+            "unicode": "uf071"
+         },
+         {
+            "family": "solid",
+            "name": "external-link-alt",
+            "unicode": "uf35d"
+         },
+         {
+            "family": "solid",
+            "name": "file",
+            "unicode": "uf15b"
+         },
+         {
+            "family": "solid",
+            "name": "folder",
+            "unicode": "uf07b"
+         },
+         {
+            "family": "solid",
+            "name": "image",
+            "unicode": "uf03e"
+         },
+         {
+            "family": "solid",
+            "name": "inbox",
+            "unicode": "uf01c"
+         },
+         {
+            "family": "solid",
+            "name": "info-circle",
+            "unicode": "uf05a"
+         },
+         {
+            "family": "solid",
+            "name": "keyboard",
+            "unicode": "uf11c"
+         },
+         {
+            "family": "solid",
+            "name": "lock",
+            "unicode": "uf023"
+         },
+         {
+            "family": "solid",
+            "name": "lock-open",
+            "unicode": "uf3c1"
+         },
+         {
+            "family": "solid",
+            "name": "moon",
+            "unicode": "uf186"
+         },
+         {
+            "family": "solid",
+            "name": "star",
+            "unicode": "uf005"
+         },
+         {
+            "family": "solid",
+            "name": "sun",
+            "unicode": "uf185"
+         },
+         {
+            "family": "solid",
+            "name": "times",
+            "unicode": "uf00d"
+         },
+         {
+            "family": "solid",
+            "name": "user",
+            "unicode": "uf007"
+         },
+         {
+            "family": "regular",
+            "name": "circle",
+            "unicode": "uf111"
+         },
+         {
+            "family": "brands",
+            "name": "github",
+            "unicode": "uf09b"
+         }
+      ]
+   },
+   "fontDirty": false,
+   "assetsDirty": false,
+   "components": []
+}

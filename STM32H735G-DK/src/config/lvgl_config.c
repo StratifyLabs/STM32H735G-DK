@@ -12,6 +12,9 @@
 
 #if _IS_BOOT == 0
 
+#include "designlab/fonts/fonts.h"
+#include "designlab/themes/themes.h"
+
 #define SCREEN_MEM_SIZE (LCD_DEFAULT_WIDTH * LCD_DEFAULT_HEIGHT * 4)
 
 static void *reload_address = NULL;
@@ -128,7 +131,7 @@ void lvgl_config_start() {
   disp_drv.ver_res = LCD_DEFAULT_HEIGHT;
 
   /*Register the driver and save the created display objects*/
-  lv_disp_drv_register(&disp_drv);
+  lv_disp_t * display = lv_disp_drv_register(&disp_drv);
 
   static lv_indev_drv_t indev_drv = {};
   lv_indev_drv_init(&indev_drv);           /*Basic initialization*/
@@ -136,6 +139,27 @@ void lvgl_config_start() {
   indev_drv.read_cb = touch_read_callback; /*See below.*/
   /*Register the driver in LVGL and save the created input device object*/
   lv_indev_drv_register(&indev_drv);
+
+  default_light_small_theme_initialize(display, NULL);
+  default_dark_small_theme_initialize(display, NULL);
+}
+
+static const lvgl_api_theme_descriptor_t theme_list[] = {
+  {.name = "light", .theme = &default_light_small_theme},
+  {.name = "dark", .theme = &default_dark_small_theme}};
+
+int lvgl_get_theme(void *args) {
+  lvgl_api_theme_request_t *request = args;
+  if (
+    request->offset
+    < sizeof(theme_list) / sizeof(lvgl_api_theme_descriptor_t)) {
+    request->descriptor = theme_list + request->offset;
+    return 0;
+  }
+
+  request->descriptor = NULL;
+  errno = EINVAL;
+  return -1;
 }
 
 void lvgl_config_initialize_display() {
@@ -146,48 +170,11 @@ void lvgl_config_initialize_display() {
   cortexm_svcall(svcall_flush, (void *)LCD_LAYER_1_ADDRESS);
 }
 
-extern const lv_font_t montserrat_r_16;
-extern const lv_font_t montserrat_r_20;
-extern const lv_font_t montserrat_r_24;
-extern const lv_font_t montserrat_r_28;
-extern const lv_font_t montserrat_r_44;
-extern const lv_font_t montserrat_r_56;
-extern const lv_font_t montserrat_r_72;
-
-extern const lv_font_t montserrat_l_16;
-extern const lv_font_t montserrat_l_20;
-extern const lv_font_t montserrat_l_24;
-extern const lv_font_t montserrat_l_28;
-
-extern const lv_font_t montserrat_sb_20;
-extern const lv_font_t montserrat_sb_24;
-extern const lv_font_t montserrat_sb_28;
-extern const lv_font_t montserrat_sb_44;
-extern const lv_font_t montserrat_sb_56;
-extern const lv_font_t montserrat_sb_72;
-
-extern const lv_font_t sourcecode_r_8;
-extern const lv_font_t sourcecode_r_12;
-extern const lv_font_t sourcecode_r_16;
-extern const lv_font_t sourcecode_r_20;
-extern const lv_font_t sourcecode_r_24;
-extern const lv_font_t sourcecode_r_28;
-
-static const lvgl_api_font_descriptor_t font_descriptors[] = {
-    {"montserrat-r-24", &montserrat_r_16},
-    {"montserrat-r-24", &montserrat_r_24},
-    {"montserrat-l-24", &montserrat_l_24},
-    {"montserrat-sb-28", &montserrat_sb_28},
-    {"montserrat-sb-44", &montserrat_sb_44},
-    {"sourcecode-r-16", &sourcecode_r_16},
-    {"sourcecode-r-24", &sourcecode_r_24},
-};
-
 int lvgl_get_font(void *args) {
   lvgl_api_font_request_t *request = args;
   if (request->offset <
-      sizeof(font_descriptors) / sizeof(lvgl_api_font_descriptor_t)) {
-    request->descriptor = font_descriptors + request->offset;
+      sizeof(lvgl_font_list) / sizeof(lvgl_api_font_descriptor_t)) {
+    request->descriptor = lvgl_font_list + request->offset;
     return 0;
   }
 

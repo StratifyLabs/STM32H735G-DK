@@ -2,6 +2,9 @@
 set(SOURCES
 	config.h
 	sl_config.h
+
+	designlab/themes/themes.h
+
 	config/clock_config.c
 	config/clock_config.h
 	config/cache_config.c

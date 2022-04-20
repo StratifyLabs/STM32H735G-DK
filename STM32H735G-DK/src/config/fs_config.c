@@ -2,6 +2,7 @@
 #include <device/appfs.h>
 #include <mcu/flash.h>
 #include <sos/dev/appfs.h>
+#include <sos/fs/assetfs.h>
 
 #include <fatfs.h>
 
@@ -21,48 +22,56 @@
 
 // Application Filesystem ------------------------------------------
 static u32 ram_usage_table[APPFS_RAM_USAGE_WORDS(
-    RAM_PAGES * USE_INTERNAL_RAM +
-    EXTERNAL_RAM_PAGES * USE_EXTERNAL_RAM)] MCU_SYS_MEM;
+  RAM_PAGES * USE_INTERNAL_RAM
+  + EXTERNAL_RAM_PAGES * USE_EXTERNAL_RAM)] MCU_SYS_MEM;
 
 // flash doesn't need config or state
-static const devfs_device_t flash0 =
-    DEVFS_DEVICE("flash0", mcu_flash, 0, 0, 0, 0666, SYSFS_ROOT, S_IFBLK);
+static const devfs_device_t flash0
+  = DEVFS_DEVICE("flash0", mcu_flash, 0, 0, 0, 0666, SYSFS_ROOT, S_IFBLK);
 
 const appfs_mem_config_t appfs_mem_config = {
-    .usage_size = sizeof(ram_usage_table),
-    .section_count = 1 + USE_INTERNAL_RAM + USE_EXTERNAL_RAM,
-    .usage = ram_usage_table,
-    .flash_driver = &flash0,
-    .sections = {{.o_flags = MEM_FLAG_IS_FLASH,
-                  .page_count = 1,
-                  .page_size = 128 * 1024UL,
-                  .address = FLASH_START}
+  .usage_size = sizeof(ram_usage_table),
+  .section_count = 1 + USE_INTERNAL_RAM + USE_EXTERNAL_RAM,
+  .usage = ram_usage_table,
+  .flash_driver = &flash0,
+  .sections = {
+    {.o_flags = MEM_FLAG_IS_FLASH,
+     .page_count = 1,
+     .page_size = 128 * 1024UL,
+     .address = FLASH_START}
 #if USE_INTERNAL_RAM
-                 ,
-                 // internal RAM
-                 {.o_flags = MEM_FLAG_IS_RAM,
-                  .page_count = RAM_PAGES,
-                  .page_size = MCU_RAM_PAGE_SIZE,
-                  .address = RAM_START}
+    ,
+    // internal RAM
+    {.o_flags = MEM_FLAG_IS_RAM,
+     .page_count = RAM_PAGES,
+     .page_size = MCU_RAM_PAGE_SIZE,
+     .address = RAM_START}
 #endif
 #if USE_EXTERNAL_RAM
-                 ,
-                 // external OSPI RAM
-                 {.o_flags = MEM_FLAG_IS_RAM | MEM_FLAG_IS_EXTERNAL,
-                  .page_count = EXTERNAL_RAM_PAGES,
-                  .page_size = MCU_RAM_PAGE_SIZE,
-                  .address = CONFIG_APP_MEMORY_ADDRESS}
+    ,
+    // external OSPI RAM
+    {.o_flags = MEM_FLAG_IS_RAM | MEM_FLAG_IS_EXTERNAL,
+     .page_count = EXTERNAL_RAM_PAGES,
+     .page_size = MCU_RAM_PAGE_SIZE,
+     .address = CONFIG_APP_MEMORY_ADDRESS}
 #endif
-    }};
+  }};
 
 const devfs_device_t mem0 = DEVFS_DEVICE(
-    "mem0", appfs_mem, 0, &appfs_mem_config, 0, 0666, SYSFS_ROOT, S_IFBLK);
+  "mem0",
+  appfs_mem,
+  0,
+  &appfs_mem_config,
+  0,
+  0666,
+  SYSFS_ROOT,
+  S_IFBLK);
 
 static void svcall_is_fatfs_drive_present(void *args) {
   // card detect is PD3
   int *is_present = args;
-  *is_present = (sos_config.sys.pio_read(CONFIG_CARD_PRESENT_PORT,
-                                         CONFIG_CARD_PRESENT_PINMASK) == 0);
+  *is_present
+    = (sos_config.sys.pio_read(CONFIG_CARD_PRESENT_PORT, CONFIG_CARD_PRESENT_PINMASK) == 0);
 }
 
 static int is_fatfs_drive_present() {
@@ -82,6 +91,16 @@ const fatfs_config_t fatfs_configuration = {
     .wait_busy_timeout_count = 10000,
     .vol_id = 0};
 
+
+ASSETFS_FILE(icon_256x256_png, "../designlab/assets/icon-128x128.png");
+
+const assetfs_config_t assetfs_config = {
+  .count = 1,
+  .entries = {
+    ASSETFS_ENTRY("icon.png", icon_256x256_png, 0444, SYSFS_USER)
+  }
+};
+
 #endif
 
 // Root Filesystem---------------------------------------------------
@@ -97,15 +116,20 @@ const fatfs_config_t fatfs_configuration = {
  *
  */
 
+
+
+
 const sysfs_t sysfs_list[] = {
 // managing applications
 #if _IS_BOOT == 0
-    APPFS_MOUNT("/app", &mem0, 0777, SYSFS_ROOT),
+  APPFS_MOUNT("/app", &mem0, 0777, SYSFS_ROOT),
 #endif
-    // the list of devices
-    DEVFS_MOUNT("/dev", devfs_list, 0777, SYSFS_ROOT),
+  // the list of devices
+  DEVFS_MOUNT("/dev", devfs_list, 0777, SYSFS_ROOT),
 #if _IS_BOOT == 0
-    FATFS_MOUNT("/home", &fatfs_configuration, 0777, SYSFS_ROOT),
+  FATFS_MOUNT("/home", &fatfs_configuration, 0777, SYSFS_ROOT),
+  ASSETFS_MOUNT("/assets", &assetfs_config, 0777, SYSFS_ROOT),
 #endif
-    // root mount
-    SYSFS_MOUNT("/", sysfs_list, 0777, SYSFS_ROOT), SYSFS_TERMINATOR};
+  // root mount
+  SYSFS_MOUNT("/", sysfs_list, 0777, SYSFS_ROOT),
+  SYSFS_TERMINATOR};

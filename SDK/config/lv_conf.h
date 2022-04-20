@@ -21,6 +21,8 @@
    COLOR SETTINGS
  *====================*/
 
+#define LVGL_RUNTIME_TASK_ARRAY_SIZE 8
+
 /*Color depth: 1 (1 byte per pixel), 8 (RGB332), 16 (RGB565), 32 (ARGB8888)*/
 #define LV_COLOR_DEPTH     32
 
@@ -103,7 +105,7 @@
  *With complex image decoders (e.g. PNG or JPG) caching can save the continuous open/decode of images.
  *However the opened images might consume additional RAM.
  *0: to disable caching*/
-#define LV_IMG_CACHE_DEF_SIZE       0
+#define LV_IMG_CACHE_DEF_SIZE       4
 
 /*Maximum buffer size to allocate for rotation. Only used if software rotation is enabled in the display driver.*/
 #define LV_DISP_ROT_MAX_BUF         (10*1024)
@@ -470,24 +472,24 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
  * Themes
  *----------*/
 /*A simple, impressive and very complete theme*/
-#define LV_USE_THEME_DEFAULT    1
+#define LV_USE_THEME_DEFAULT    0
 #if LV_USE_THEME_DEFAULT
 
 /*0: Light mode 1: Dark mode*/
-# define LV_THEME_DEFAULT_DARK     1
+# define LV_THEME_DEFAULT_DARK     0
 
 /*1: Enable grow on press*/
-# define LV_THEME_DEFAULT_GROW              1
+# define LV_THEME_DEFAULT_GROW              0
 
 /*Default transition time in [ms]*/
 # define LV_THEME_DEFAULT_TRANSITON_TIME    50
 #endif /*LV_USE_THEME_DEFAULT*/
 
 /*An very simple them that is a good starting point for a custom theme*/
-#define LV_USE_THEME_BASIC    1
+#define LV_USE_THEME_BASIC    0
 
 /*A theme designed for monochrome displays*/
-#define LV_USE_THEME_MONO       1
+#define LV_USE_THEME_MONO       0
 
 /*-----------
  * Layouts
@@ -498,6 +500,9 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 
 /*A layout similar to Grid in CSS.*/
 #define LV_USE_GRID     1
+
+#define LV_USE_PNG 1
+
 
 /*==================
 * EXAMPLES

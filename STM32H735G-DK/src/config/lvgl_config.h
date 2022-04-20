@@ -5,6 +5,7 @@
 void lvgl_config_initialize_display();
 void lvgl_config_start();
 int lvgl_get_font(void *args);
+int lvgl_get_theme(void *args);
 #endif
 
 #endif // LVGL_CONFIG_H

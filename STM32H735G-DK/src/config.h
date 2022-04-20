@@ -25,7 +25,7 @@
 //Removing SOS_DEBUG_LINK causes the USB link protocol to fail
 
 #define CONFIG_DEBUG_FLAGS                                                     \
-  (SOS_DEBUG_MESSAGE | SOS_DEBUG_DEVICE | SOS_DEBUG_SYS| SOS_DEBUG_SCHEDULER |     \
+  (SOS_DEBUG_MESSAGE | SOS_DEBUG_DEVICE | SOS_DEBUG_SYS | SOS_DEBUG_SCHEDULER |     \
    SOS_DEBUG_USER0 | SOS_DEBUG_USER1 )
 #define CONFIG_BOARD_FLAGS 0
 

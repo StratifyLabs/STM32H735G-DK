@@ -1,0 +1,14 @@
+{
+  "type": "theme",
+  "version": 0,
+  "colors": "../../SDK/dependencies/DesignAPI/themes/default/colors-light.json",
+  "sizes": "../../SDK/dependencies/DesignAPI/themes/default/sizes.json",
+  "styles": "../../SDK/dependencies/DesignAPI/themes/default/styles.json",
+  "fonts": "fonts.json",
+  "rules": "../../SDK/dependencies/DesignAPI/themes/default/rules.json",
+  "name": "default_light_small",
+  "xScale": 0.4,
+  "yScale": 0.4,
+  "directory": "../app/src/designlab/themes",
+  "header": "themes.h"
+}

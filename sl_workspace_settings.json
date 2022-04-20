@@ -16,5 +16,6 @@
          "app.install:path=apps/SystemApps/FileBrowser,run,terminal,signkey=RhnmvxQ8D4tlh02L8693"
       ]
    },
-   "signKey": "RhnmvxQ8D4tlh02L8693"
+   "signKey": "RhnmvxQ8D4tlh02L8693",
+   "debugAnalyzeApp": "apps/SystemApps/FileBrowse/build_release_v7em_f5dh/FileBrowse_release_v7em_f5dh.elf"
 }
