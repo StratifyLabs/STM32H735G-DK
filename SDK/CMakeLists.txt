@@ -35,7 +35,7 @@ set(STRATIFYOS_LWIP_PATH
 
 set(API_IS_SDK ON CACHE INTERNAL "API_IS_SDK disable include statemenets")
 
-sdk_add_subdirectory(API main ON)
+sdk_add_subdirectory(API v1.4 ON)
 include(${BASE_DIRECTORY}/API/libraries/API.cmake)
 
 
@@ -61,7 +61,7 @@ sdk_add_subdirectory(JsonAPI v1.1 ON)
 sdk_add_subdirectory(CryptoAPI v1.1 ON)
 sdk_add_subdirectory(InetAPI v1.1 ON)
 sdk_add_subdirectory(CloudAPI v1.0 ON)
-sdk_add_subdirectory(LvglAPI main ON)
+sdk_add_subdirectory(LvglAPI v0.0 ON)
 
 
 message(STATUS "Add targets: StratifyOS_crt_debug_${SOS_ARCH} to install")
