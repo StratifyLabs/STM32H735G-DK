@@ -50,7 +50,7 @@ set(BUILD_STM32_ALL OFF CACHE INTERNAL "DONT BUILD ALL STM32 BUILDS")
 
 sdk_add_subdirectory(StratifyOS-compiler-rt v1.1 OFF)
 sdk_add_subdirectory(StratifyOS-newlib v1.1 OFF)
-sdk_add_subdirectory(StratifyOS main ON)
+sdk_add_subdirectory(StratifyOS v4.2 ON)
 sdk_add_subdirectory(StratifyOS-mcu-stm32 v4.1 OFF)
 sdk_add_subdirectory(StratifyOS-fatfs v1.1 OFF)
 sdk_add_subdirectory(HalAPI v1.2 ON)
