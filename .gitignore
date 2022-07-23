@@ -6,6 +6,7 @@ SDK/StratifyLabs-SDK
 SDK/*.bin
 SDK/*.exe
 apps/*/
+.idea/
 
 sl_report.txt
 profile.sh
