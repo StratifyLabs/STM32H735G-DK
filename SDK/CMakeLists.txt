@@ -33,7 +33,7 @@ set(STRATIFYOS_LWIP_PATH
 
 set(API_IS_SDK ON CACHE INTERNAL "API_IS_SDK disable include statements")
 
-sdk_add_subdirectory(API main ON)
+sdk_add_subdirectory(API v1.4 ON)
 include(${BASE_DIRECTORY}/API/libraries/API.cmake)
 
 
