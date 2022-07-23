@@ -59,8 +59,8 @@ sdk_add_subdirectory(JsonAPI v1.2 ON)
 sdk_add_subdirectory(CryptoAPI v1.2 ON)
 sdk_add_subdirectory(InetAPI v1.2 ON)
 sdk_add_subdirectory(CloudAPI v1.1 ON)
-sdk_add_subdirectory(LvglAPI main ON)
-sdk_add_subdirectory(DesignAPI main ON)
+sdk_add_subdirectory(LvglAPI v0.0 ON)
+sdk_add_subdirectory(DesignAPI v0.0 ON)
 
 
 message(STATUS "Add targets: StratifyOS_crt_debug_${SOS_ARCH} to install")
