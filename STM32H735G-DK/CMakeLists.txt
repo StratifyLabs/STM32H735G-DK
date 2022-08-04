@@ -1,17 +1,9 @@
 cmake_minimum_required (VERSION 3.12)
 
-if(NOT SOS_SDK_PATH)
-	set(SOS_SDK_PATH $ENV{SOS_SDK_PATH})
-endif()
-
-set(CMAKE_MODULE_PATH ${SOS_SDK_PATH}/cmake)
-set(CMAKE_TOOLCHAIN_FILE ${SOS_SDK_PATH}/cmake/sos-toolchain.cmake)
-include(sos-sdk)
-
 # change to the ARCH of your chip like v7m for Cortex M3
-set(SOS_ARCH "v7em_f5dh")
+set(CMSDK_ARCH "v7em_f5dh")
 # set to an empty string
-set(SOS_ARCH_LIST "")
+set(CMSDK_ARCH_LIST "")
 set(MCU stm32h735xx)
 
 # include other cmake modules as needed
@@ -70,12 +62,12 @@ set(LDSCRIPT_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/stm32-common.ld
 	)
 
-sos_sdk_add_subdirectory(KERNEL_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/src)
-sos_sdk_add_subdirectory(BOOT_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/boot)
-sos_sdk_add_subdirectory(DESIGNLAB_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/src/designlab)
+cmsdk_add_subdirectory(KERNEL_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/src)
+cmsdk_add_subdirectory(BOOT_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/boot)
+cmsdk_add_subdirectory(DESIGNLAB_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/src/designlab)
 
-sos_sdk_bsp_target(RELEASE ${PROJECT_NAME} "" release ${SOS_ARCH})
-sos_sdk_bsp_target(DEBUG ${PROJECT_NAME} "" debug ${SOS_ARCH})
+cmsdk_bsp_target(RELEASE ${PROJECT_NAME} "" release ${CMSDK_ARCH})
+cmsdk_bsp_target(DEBUG ${PROJECT_NAME} "" debug ${CMSDK_ARCH})
 
 add_executable(${RELEASE_TARGET})
 
@@ -106,11 +98,11 @@ set_target_properties(${RELEASE_TARGET}
 	"-u symbols_table -T${KERNEL_LINKER_FILE}"
 	)
 
-sos_sdk_bsp_target(BOOT_RELEASE ${PROJECT_NAME} boot release ${SOS_ARCH})
-sos_sdk_bsp_target(BOOT_DEBUG ${PROJECT_NAME} boot debug ${SOS_ARCH})
+cmsdk_bsp_target(BOOT_RELEASE ${PROJECT_NAME} boot release ${CMSDK_ARCH})
+cmsdk_bsp_target(BOOT_DEBUG ${PROJECT_NAME} boot debug ${CMSDK_ARCH})
 
 add_executable(${BOOT_RELEASE_TARGET})
-sos_sdk_copy_target(${RELEASE_TARGET} ${BOOT_RELEASE_TARGET})
+cmsdk_copy_target(${RELEASE_TARGET} ${BOOT_RELEASE_TARGET})
 
 target_compile_definitions(${RELEASE_TARGET}
 	PUBLIC
@@ -120,7 +112,7 @@ target_compile_definitions(${RELEASE_TARGET}
 	)
 
 add_executable(${DEBUG_TARGET})
-sos_sdk_copy_target(${RELEASE_TARGET} ${DEBUG_TARGET})
+cmsdk_copy_target(${RELEASE_TARGET} ${DEBUG_TARGET})
 
 target_compile_definitions(${BOOT_RELEASE_TARGET}
 	PUBLIC
@@ -136,12 +128,12 @@ target_sources(${BOOT_RELEASE_TARGET}
 
 
 add_executable(${BOOT_DEBUG_TARGET})
-sos_sdk_copy_target(${BOOT_RELEASE_TARGET} ${BOOT_DEBUG_TARGET})
+cmsdk_copy_target(${BOOT_RELEASE_TARGET} ${BOOT_DEBUG_TARGET})
 
-sos_sdk_bsp("${BOOT_RELEASE_OPTIONS}" ${HARDWARE_ID} ${BOOT_START_ADDRESS} "${KERNEL_LIBRARIES}")
-sos_sdk_bsp("${BOOT_DEBUG_OPTIONS}" ${HARDWARE_ID} ${BOOT_START_ADDRESS} "${KERNEL_LIBRARIES}")
+cmsdk_bsp("${BOOT_RELEASE_OPTIONS}" ${HARDWARE_ID} ${BOOT_START_ADDRESS} "${KERNEL_LIBRARIES}")
+cmsdk_bsp("${BOOT_DEBUG_OPTIONS}" ${HARDWARE_ID} ${BOOT_START_ADDRESS} "${KERNEL_LIBRARIES}")
 
-sos_sdk_bsp("${RELEASE_OPTIONS}" ${HARDWARE_ID} ${KERNEL_START_ADDRESS} "${KERNEL_LIBRARIES}")
-sos_sdk_bsp("${DEBUG_OPTIONS}" ${HARDWARE_ID} ${KERNEL_START_ADDRESS} "${KERNEL_LIBRARIES}")
+cmsdk_bsp("${RELEASE_OPTIONS}" ${HARDWARE_ID} ${KERNEL_START_ADDRESS} "${KERNEL_LIBRARIES}")
+cmsdk_bsp("${DEBUG_OPTIONS}" ${HARDWARE_ID} ${KERNEL_START_ADDRESS} "${KERNEL_LIBRARIES}")
 
 
