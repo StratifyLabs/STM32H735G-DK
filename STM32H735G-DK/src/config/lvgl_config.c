@@ -140,26 +140,17 @@ void lvgl_config_start() {
   /*Register the driver in LVGL and save the created input device object*/
   lv_indev_drv_register(&indev_drv);
 
-  default_light_small_theme_initialize(display, NULL);
-  default_dark_small_theme_initialize(display, NULL);
+  themes_initialize();
 }
-
-static const lvgl_api_theme_descriptor_t theme_list[] = {
-  {.name = "light", .theme = &default_light_small_theme},
-  {.name = "dark", .theme = &default_dark_small_theme}};
 
 int lvgl_get_theme(void *args) {
   lvgl_api_theme_request_t *request = args;
-  if (
-    request->offset
-    < sizeof(theme_list) / sizeof(lvgl_api_theme_descriptor_t)) {
-    request->descriptor = theme_list + request->offset;
-    return 0;
+  request->descriptor = themes_get_theme(request->offset);
+  if( request->descriptor == NULL ) {
+    errno = EINVAL;
+    return -1;
   }
-
-  request->descriptor = NULL;
-  errno = EINVAL;
-  return -1;
+  return 0;
 }
 
 void lvgl_config_initialize_display() {
@@ -173,8 +164,8 @@ void lvgl_config_initialize_display() {
 int lvgl_get_font(void *args) {
   lvgl_api_font_request_t *request = args;
   if (request->offset <
-      sizeof(lvgl_font_list) / sizeof(lvgl_api_font_descriptor_t)) {
-    request->descriptor = lvgl_font_list + request->offset;
+      sizeof(fonts_list) / sizeof(lvgl_api_font_descriptor_t)) {
+    request->descriptor = fonts_list + request->offset;
     return 0;
   }
 

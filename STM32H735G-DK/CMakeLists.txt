@@ -39,10 +39,10 @@ set(KERNEL_LIBRARIES
 	StratifyOS_sys
 	StratifyOS_usbd
 	newlib_libc
-	newlib_liba_vsprintf
-	newlib_liba_vprintf
-	newlib_liba_vsiprintf
-	newlib_liba_viprintf
+	#newlib_liba_vsprintf
+	#newlib_liba_vprintf
+	#newlib_liba_vsiprintf
+	#newlib_liba_viprintf
 	newlib_libc
 	newlib_libm
 	StratifyOS_sys

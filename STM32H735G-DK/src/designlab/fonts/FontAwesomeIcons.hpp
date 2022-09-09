@@ -33,8 +33,6 @@ namespace icons {
     static constexpr auto github_brands = "\uf09b";
   }
 }
-#endif // FONTAWESOME_ICONS_HPP
-
 
 #define ICONS_FA_CHECK_SOLID "\uf00c"
 #define ICONS_FA_CHEVRON_DOWN_SOLID "\uf078"
@@ -62,5 +60,7 @@ namespace icons {
 #define ICONS_FA_USER_SOLID "\uf007"
 #define ICONS_FA_CIRCLE_REGULAR "\uf111"
 #define ICONS_FA_GITHUB_BRANDS "\uf09b"
+#endif // FONTAWESOME_ICONS_HPP
+
 
 

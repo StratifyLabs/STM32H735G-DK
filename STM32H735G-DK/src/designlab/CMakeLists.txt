@@ -2,6 +2,8 @@
 set(SOURCES
   themes/default_dark_small.c
   themes/default_light_small.c
+  themes/themes.c
+  themes/themes.h
   fonts/fonts.c
   fonts/fonts.h
   fonts/montserrat_r_11.c

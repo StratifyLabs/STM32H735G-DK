@@ -1,16 +1,19 @@
-//
-// Created by Tyler Gilbert on 1/24/22.
-//
+#ifndef DESIGNLAB_THEMES_THEMES_H_
+#define DESIGNLAB_THEMES_THEMES_H_
 
-#ifndef STM32H735G_DK_THEMES_H
-#define STM32H735G_DK_THEMES_H
 
 #include <lvgl_api.h>
 
-extern lv_theme_t default_dark_small_theme;
-extern lv_theme_t default_light_small_theme;
+#if defined __cplusplus
+extern "C" {
+#endif
 
-lv_theme_t * default_light_small_theme_initialize(lv_disp_t * disp, lv_theme_t * parent);
-lv_theme_t * default_dark_small_theme_initialize(lv_disp_t * disp, lv_theme_t * parent);
+const lvgl_api_theme_descriptor_t *themes_get_theme(int offset);
+void themes_initialize();
 
-#endif //STM32H735G_DK_THEMES_H
+#if defined __cplusplus
+}
+#endif
+
+#endif // DESIGNLAB_THEMES_THEMES_H_
+
