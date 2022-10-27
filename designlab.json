@@ -1,5 +1,5 @@
 {
-   "source": "STM32H735G-DK/src",
+   "source": "",
    "themes": [
       {
          "path": "designlab/themes/theme-dark-small.json"

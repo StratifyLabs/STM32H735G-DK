@@ -17,5 +17,6 @@
       ]
    },
    "signKey": "RhnmvxQ8D4tlh02L8693",
-   "debugAnalyzeApp": "apps/SystemApps/FileBrowse/build_release_v7em_f5dh/FileBrowse_release_v7em_f5dh.elf"
+   "debugAnalyzeApp": "/Users/tgil/gitv4/STM32H735G-DK/apps/gui/gui/build_release_v7em_f5dh/gui_release_v7em_f5dh.elf",
+   "debugAnalyzeOs": "STM32H735G-DK/build_debug/STM32H735G-DK_debug.elf"
 }

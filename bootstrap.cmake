@@ -7,17 +7,10 @@ file(REMOVE_RECURSE ${DEPENDENCIES_DIRECTORY}/CMakeSDK)
 message(STATUS "cloning CMakeSDK project")
 
 execute_process(
-	COMMAND git clone --branch v2.0 https://github.com/StratifyLabs/CMakeSDK.git
-	WORKING_DIRECTORY ${DEPENDENCIES_DIRECTORY}
-)
+	COMMAND git clone --branch v2.1 https://github.com/StratifyLabs/CMakeSDK.git
+	WORKING_DIRECTORY ${DEPENDENCIES_DIRECTORY})
 
 execute_process(
-	COMMAND git clone --branch v2.0 https://github.com/StratifyLabs/CMakeSDK.git
-	WORKING_DIRECTORY ${DEPENDENCIES_DIRECTORY}
-	)
-
-execute_process(
-	COMMAND cmake -DCMSDK_SDK_PATH=${SDK_DIRECTORY} -P ${DEPENDENCIES_DIRECTORY}/CMakeSDK/scripts/sos-bootstrap.cmake
-	)
+	COMMAND cmake -DCMSDK_SDK_PATH=${SDK_DIRECTORY} -P ${DEPENDENCIES_DIRECTORY}/CMakeSDK/scripts/sos-bootstrap.cmake)
 
 

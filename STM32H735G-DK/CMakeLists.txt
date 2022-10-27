@@ -22,8 +22,7 @@ set(DEFINITIONS
 	__BOOT_START_ADDRESS=${BOOT_START_ADDRESS}
 	__KERNEL_START_ADDRESS=${KERNEL_START_ADDRESS}
 	__stm32h735xx
-  MCU_ARCH_STM32
-	)
+  MCU_ARCH_STM32)
 
 set(BOOT_LIBRARIES
 	StratifyOS_${MCU}
@@ -39,37 +38,24 @@ set(KERNEL_LIBRARIES
 	StratifyOS_sys
 	StratifyOS_usbd
 	newlib_libc
-	#newlib_liba_vsprintf
-	#newlib_liba_vprintf
-	#newlib_liba_vsiprintf
-	#newlib_liba_viprintf
-	newlib_libc
 	newlib_libm
-	StratifyOS_sys
-	newlib_libc
-	newlib_liba_vsprintf
-	newlib_liba_vprintf
-	newlib_liba_vsiprintf
-	newlib_liba_viprintf
-	newlib_libc
-	newlib_libm
-	StratifyOS_sys
-	)
+	StratifyOS_sys)
 
 set(LDSCRIPT_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/stm32h735xg-rom.ld
 	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/stm32h7xx.ld
-	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/stm32-common.ld
-	)
+	${CMAKE_CURRENT_SOURCE_DIR}/ldscripts/stm32-common.ld)
 
 cmsdk_add_subdirectory(KERNEL_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/src)
 cmsdk_add_subdirectory(BOOT_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/boot)
 cmsdk_add_subdirectory(DESIGNLAB_SOURCELIST ${CMAKE_CURRENT_SOURCE_DIR}/src/designlab)
 
-cmsdk_bsp_target(RELEASE ${PROJECT_NAME} "" release ${CMSDK_ARCH})
-cmsdk_bsp_target(DEBUG ${PROJECT_NAME} "" debug ${CMSDK_ARCH})
-
-add_executable(${RELEASE_TARGET})
+cmsdk2_bsp_add_executable(
+	NAME ${PROJECT_NAME}
+	CONFIG release
+	SUFFIX .elf
+	ARCH ${CMSDK_ARCH}
+	TARGET RELEASE_TARGET)
 
 target_sources(${RELEASE_TARGET}
 	PUBLIC
@@ -77,15 +63,11 @@ target_sources(${RELEASE_TARGET}
 	${CMAKE_CURRENT_SOURCE_DIR}/sl_settings.json
 	${CMAKE_CURRENT_SOURCE_DIR}/../README.md
 	${LDSCRIPT_SOURCES}
-	${DESIGNLAB_SOURCELIST}
-	)
-
+	${DESIGNLAB_SOURCELIST})
 target_include_directories(${RELEASE_TARGET}
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/src
-	include
-	)
-
+	include)
 target_compile_options(${RELEASE_TARGET} PUBLIC -Os)
 
 target_link_directories(${RELEASE_TARGET}
@@ -95,45 +77,74 @@ target_link_directories(${RELEASE_TARGET}
 set_target_properties(${RELEASE_TARGET}
 	PROPERTIES
 	LINK_FLAGS
-	"-u symbols_table -T${KERNEL_LINKER_FILE}"
-	)
+	"-u symbols_table -T${KERNEL_LINKER_FILE}")
 
-cmsdk_bsp_target(BOOT_RELEASE ${PROJECT_NAME} boot release ${CMSDK_ARCH})
-cmsdk_bsp_target(BOOT_DEBUG ${PROJECT_NAME} boot debug ${CMSDK_ARCH})
+cmsdk2_bsp_add_executable(
+	NAME ${PROJECT_NAME}
+	CONFIG release
+	SUFFIX .elf
+	OPTION boot
+	ARCH ${CMSDK_ARCH}
+	TARGET BOOT_RELEASE_TARGET)
 
-add_executable(${BOOT_RELEASE_TARGET})
-cmsdk_copy_target(${RELEASE_TARGET} ${BOOT_RELEASE_TARGET})
+cmsdk2_copy_target(
+	SOURCE ${RELEASE_TARGET}
+	DESTINATION ${BOOT_RELEASE_TARGET})
 
 target_compile_definitions(${RELEASE_TARGET}
 	PUBLIC
 	${DEFINITIONS}
 	VECTOR_TABLE_ADDRESS=${KERNEL_START_ADDRESS}
-	_IS_BOOT=0
-	)
+	_IS_BOOT=0)
 
-add_executable(${DEBUG_TARGET})
-cmsdk_copy_target(${RELEASE_TARGET} ${DEBUG_TARGET})
+cmsdk2_bsp_add_executable(
+	NAME ${PROJECT_NAME}
+	SUFFIX .elf
+	CONFIG debug
+	ARCH ${CMSDK_ARCH}
+	TARGET DEBUG_TARGET)
+cmsdk2_copy_target(
+	SOURCE ${RELEASE_TARGET}
+	DESTINATION ${DEBUG_TARGET})
 
 target_compile_definitions(${BOOT_RELEASE_TARGET}
 	PUBLIC
 	${DEFINITIONS}
 	VECTOR_TABLE_ADDRESS=${BOOT_START_ADDRESS}
-	_IS_BOOT=1
-	)
-
+	_IS_BOOT=1)
 target_sources(${BOOT_RELEASE_TARGET}
 	PUBLIC
-	${BOOT_SOURCELIST}
-	)
+	${BOOT_SOURCELIST})
 
+cmsdk2_bsp_add_executable(
+	NAME ${PROJECT_NAME}
+	CONFIG debug
+	SUFFIX .elf
+	OPTION boot
+	ARCH ${CMSDK_ARCH}
+	TARGET BOOT_DEBUG_TARGET)
+cmsdk2_copy_target(
+	SOURCE ${BOOT_RELEASE_TARGET}
+	DESTINATION ${BOOT_DEBUG_TARGET})
 
-add_executable(${BOOT_DEBUG_TARGET})
-cmsdk_copy_target(${BOOT_RELEASE_TARGET} ${BOOT_DEBUG_TARGET})
-
-cmsdk_bsp("${BOOT_RELEASE_OPTIONS}" ${HARDWARE_ID} ${BOOT_START_ADDRESS} "${KERNEL_LIBRARIES}")
-cmsdk_bsp("${BOOT_DEBUG_OPTIONS}" ${HARDWARE_ID} ${BOOT_START_ADDRESS} "${KERNEL_LIBRARIES}")
-
-cmsdk_bsp("${RELEASE_OPTIONS}" ${HARDWARE_ID} ${KERNEL_START_ADDRESS} "${KERNEL_LIBRARIES}")
-cmsdk_bsp("${DEBUG_OPTIONS}" ${HARDWARE_ID} ${KERNEL_START_ADDRESS} "${KERNEL_LIBRARIES}")
-
+cmsdk2_bsp_add_dependencies(
+	TARGET ${RELEASE_TARGET}
+	HARDWARE_ID ${HARDWARE_ID}
+	START_ADDRESS ${KERNEL_START_ADDRESS}
+	DEPENDENCIES ${KERNEL_LIBRARIES})
+cmsdk2_bsp_add_dependencies(
+	TARGET ${DEBUG_TARGET}
+	HARDWARE_ID ${HARDWARE_ID}
+	START_ADDRESS ${KERNEL_START_ADDRESS}
+	DEPENDENCIES ${KERNEL_LIBRARIES})
+cmsdk2_bsp_add_dependencies(
+	TARGET ${BOOT_RELEASE_TARGET}
+	HARDWARE_ID ${HARDWARE_ID}
+	START_ADDRESS ${BOOT_START_ADDRESS}
+	DEPENDENCIES ${KERNEL_LIBRARIES})
+cmsdk2_bsp_add_dependencies(
+	TARGET ${BOOT_DEBUG_TARGET}
+	HARDWARE_ID ${HARDWARE_ID}
+	START_ADDRESS ${BOOT_START_ADDRESS}
+	DEPENDENCIES ${KERNEL_LIBRARIES})
 

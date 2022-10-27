@@ -32,7 +32,7 @@ set(STRATIFYOS_LWIP_PATH
 
 set(API_IS_SDK ON CACHE INTERNAL "API_IS_SDK disable include statements")
 
-sdk_add_subdirectory(API v1.5 ON)
+sdk_add_subdirectory(API v1.6 ON)
 include(${BASE_DIRECTORY}/API/libraries/API.cmake)
 
 
@@ -47,29 +47,16 @@ set(SOS_CONFIG_PATH ${CMAKE_CURRENT_SOURCE_DIR}/config CACHE INTERNAL "StratifyO
 set(BUILD_STM32H735 ON CACHE INTERNAL "ENABLE BUILDING OF H735")
 set(BUILD_STM32_ALL OFF CACHE INTERNAL "DONT BUILD ALL STM32 BUILDS")
 
-sdk_add_subdirectory(StratifyOS-compiler-rt main OFF)
-sdk_add_subdirectory(StratifyOS-newlib main OFF)
-sdk_add_subdirectory(StratifyOS main ON)
-sdk_add_subdirectory(StratifyOS-mcu-stm32 main OFF)
-sdk_add_subdirectory(StratifyOS-fatfs main OFF)
-sdk_add_subdirectory(HalAPI main ON)
-sdk_add_subdirectory(SosAPI main ON)
-sdk_add_subdirectory(JsonAPI v1.4 ON)
-sdk_add_subdirectory(CryptoAPI v1.3 ON)
-sdk_add_subdirectory(InetAPI v1.4 ON)
-sdk_add_subdirectory(CloudAPI v1.1 ON)
-sdk_add_subdirectory(LvglAPI main ON)
-sdk_add_subdirectory(DesignAPI main ON)
-
-
-message(STATUS "Add targets: StratifyOS_crt_debug_${CMSDK_ARCH} to install")
-#set_property(TARGET StratifyOS_crt_debug_${CMSDK_ARCH} PROPERTY EXCLUDE_FROM_ALL FALSE)
-#set_property(TARGET StratifyOS_crt_release_${CMSDK_ARCH} PROPERTY EXCLUDE_FROM_ALL FALSE)
-
-#get_property(EXCLUDE_CRT_RELEASE TARGET StratifyOS_crt_release_${CMSDK_ARCH} PROPERTY EXCLUDE_FROM_ALL)
-
-
-#message(STATUS "Exlude is ${EXCLUDE_CRT_RELEASE}")
-
-
-add_custom_target(status DEPENDS ${GIT_STATUS_DEPENDS})
+sdk_add_subdirectory(StratifyOS-compiler-rt v1.2 OFF)
+sdk_add_subdirectory(StratifyOS-newlib v1.2 OFF)
+sdk_add_subdirectory(StratifyOS v4.3 ON)
+sdk_add_subdirectory(StratifyOS-mcu-stm32 v4.2 OFF)
+sdk_add_subdirectory(StratifyOS-fatfs v1.2 OFF)
+sdk_add_subdirectory(HalAPI v1.3 ON)
+sdk_add_subdirectory(SosAPI v1.4 ON)
+sdk_add_subdirectory(JsonAPI v1.5 ON)
+sdk_add_subdirectory(CryptoAPI v1.4 ON)
+sdk_add_subdirectory(InetAPI v1.5 ON)
+sdk_add_subdirectory(CloudAPI v1.3 ON)
+sdk_add_subdirectory(LvglAPI v1.0 ON)
+sdk_add_subdirectory(DesignAPI v1.0 ON)

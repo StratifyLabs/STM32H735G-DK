@@ -58,6 +58,7 @@ int sys_kernel_request(int request, void *arg) {
     return lvgl_get_font(arg);
   }
   if( request == LVGL_REQUEST_GET_THEME ){
+    SOS_DEBUG_LINE_TRACE();
     return lvgl_get_theme(arg);
   }
 #else

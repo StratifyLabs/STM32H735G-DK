@@ -11,9 +11,7 @@ option(APPS_IS_DEMO "Clone and build the Demo applications" ON)
 option(APPS_IS_GUI "Clone and build the Demo applications" ON)
 
 macro(sdk_add_subdirectory NAME BRANCH)
-	if(IS_PULL OR NOT EXISTS ${BASE_DIRECTORY}/${NAME})
-		cmsdk_git_clone_or_pull_branch(${BASE_DIRECTORY} ${NAME} ssh://git@github.com/StratifyLabs/${NAME}.git ${BRANCH})
-	endif()
+	cmsdk_git_clone_or_pull_branch(${BASE_DIRECTORY} ${NAME} ssh://git@github.com/StratifyLabs/${NAME}.git ${BRANCH})
 	add_subdirectory(${BASE_DIRECTORY}/${NAME} ${NAME})
 endmacro()
 
