@@ -13,6 +13,8 @@ To build:
 ```sh
 git clone https://github.com/StratifyLabs/STM32H735G-DK
 cd STM32H735G-DK
+# switch to a release branch
+git switch v2
 cmake -P ./bootstrap.cmake
 # If needed login to sl and run cmake -P ./bootstrap.cmake again
 source profile.sh
